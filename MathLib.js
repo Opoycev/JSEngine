@@ -1,0 +1,579 @@
+MathLib = {
+	FastDistance2D: function(x, y)
+	{
+		//вычисляет расстояние между точками 0,0 и x, y с погрешностью 3,5%
+		
+		//Вычисляем абсолютные значения
+		var x = Math.abs(x);
+		var y = Math.abs(y);
+		
+		var mn = Min(x, y);
+		
+		return (x + y - (mn >> 1) - (mn >> 2) + (mn >> 4));
+			
+	},
+	
+	FastDistance3D: function(fx, fy, fz)
+	{
+		var x, y, z;
+		var temp;
+		
+		x = Math.abs(fx) * 1024;
+		y = Math.abs(fy) * 1024;
+		z = Math.abs(fz) * 1024;
+		
+		if (y < x) {temp = y; y = x; x = temp;}; //Swap(x, y, temp);
+		if (z < y) {temp = z; z = y; y = temp;}; //Swap(y, z, temp);
+		if (y < x) {temp = y; y = x; x = temp;}; //Swap(x, y, temp);
+		
+		var dist = (z + 11 * (y >> 5) + (x >> 2));
+		
+		return (dist >> 10);
+	},
+	
+	Polar2DToPoint2D: function(polar, rect)
+	{
+		//Преобразование из полярных в декартову систему координат
+		rect.x = polar.r * Math.cos(polar.theta);
+		rect.y = polar.r * Math.sin(polar.theta);
+	},
+	
+	Polar2D_to_RectXY: function(polar, x, y)
+	{
+		//Преобразование из полярных координат в декартовы
+		x = polar.r * Math.cos(polar.theta);
+		y = polar.r * Math.sin(polar.theta);
+	},
+	
+	Point2D_to_Polar2D: function(rect, polar)
+	{
+		//Преобразование из двумерных декартовых координат в полярные
+		polar.r = Math.sqrt((rect.x * rect.x) + (rect.y * rect.y));
+		polar.theta = Math.atan(rect.y / rect.x);
+	},
+	
+	POINT2D_To_PolarRTr: function(rect, r, theta)
+	{
+		//Функция преобразует двумерные декартовы координаты в явные значения полярных координат.
+		r = Math.sqrt((rect.x * rect.x) + (rect.y * rect.y));
+		theta = Math.atan(rect.y / rect.x);
+	},
+	
+	CYLINDRICAL3D_To_POINT3D: function(cyl, rect)
+	{
+		//Данная функция преобразует цилиндрические координаты в декартовы.
+		rect.x = cyl.r * Math.cos(cyl.theta);
+		rect.y = cyl.r * Math.sin(cyl.theta);
+		rect.z = cyl.z;
+	},
+	
+	CYLINDRICAL3D_To_RectXYZ: function(cyl, x, y, z)
+	{
+		//Данная функция преобразует цилиндрические координаты в явные значения декартовых координат.
+		x = cyl.r * Math.cos(cyl.theta);
+		y = cyl.r * Math.sin(cyl.theta);
+		z = cyl.z;
+	},
+	
+	POINT3D_To_CYLINDRICAL3D: function(rect, cyl)
+	{
+		//Функция преобразует декартовы координаты в цилиндрические.
+		cyl.r = Math.sqrt((rect.x * rect.x) + (rect.y * rect.y));
+		cyl.theta = Math.atan(rect.y / rect.x);
+		cyl.z = rect.z;
+	},
+	
+	POINT3D_To_CylindricalRThZ: function(rect, r, theta, z)
+	{
+		//Функция преобразует декартовы координаты в явные значения цилиндрических координат
+		r = Math.sqrt((rect.x * rect.x) + (rect.y * rect.y));
+		theta = Math.atan(rect.y / rect.x);
+		z = rect.z;
+	},
+	
+	SPHERICAL3D_ToPDINT3D: function(sph, rect)
+	{
+		//Функция преобразует сферические координаты в декартовы
+		var r = 0.0;
+		r = sph.p * Math.sin(sph.phi);
+		rect.z = sph.p * Math.cos(sph.phi);
+		
+		rect.x = r * Math.cos(sph.theta);
+		rect.y = r * Math.sin(sph.theta);
+	},
+	
+	SPHERICAL3D_To_RectXYZ: function(sph, x, y, z)
+	{
+		// Функция преобразует сферические координаты в явные значения декартовых координат
+		var r = 0.0;
+		r = sph.p * Math.sin(sph.phi);
+		z = sph.p * Math.sin(sph.thi);
+		
+		x = r * Math.cos(sph.theta);
+		y = r * Math.sin(sph.theta);
+	},
+	
+	POINT3D_To_SPHERICAL3D: function(rect, sph)
+	{
+		sph.p = Math.sqrt((rect.x * rect.x) + (rect.y * rect.y));
+		sph.theta = Math.atan(rect.y / rect.x);
+		
+		var r = sph.p * Math.sin(sph.phi);
+		sph.phi = Math.asin(r / sph.p);
+	},
+	
+	POINT3D_To_SphericalPThPh: function(rect, p, theta, phi)
+	{
+		//Функция преобразует декартовы координаты в явные значения сферических координат
+		p = Math.sqrt((rect.x * rect.x) + (rect.y * rect.y) + (rect.z * rect.z));
+		theta = Math.atan(rect.y / rect.x);
+		
+		var r = Math.sqrt((rect.x * rect.x) + (rect.y * rect.y));
+		phi = Math.asin(r / p);
+	},
+	
+	
+	////////////////////////////////////////Функции для работы с векторами//////////////////////////////////////
+	//Функции VECTOR*D_Add() суммируют переданные в качестве параметров векторы и возвращают полученный в результате вектор
+	VECTOR2D_Add: function(va, vb, vsum)
+	{
+		vsum.x = va.x + vb.x;
+		vsum.y = va.y + vb.y; 
+	},
+	
+	VECTOR2D_AddAndReturnVector2D: function(va, vb)
+	{
+		var vsum = new Vector2D();
+
+		vsum.x = va.x + vb.x;
+		vsum.y = va.y + vb.y;
+	
+		return vsum;
+	},
+	
+	VECTOR2D_Sub: function(va, vb, vdiff)
+	{
+		vdiff.x = va.x - vb.x;
+		vdiff.y = vb.y - vb.y;
+	},
+	
+	VECTOR2D_SubAndReturnVector2D: function(va, vb)
+	{
+		var vdiff = new Vector2D(0, 0);
+		
+		vdiff.x = va.x - vb.x;
+		vdiff.y = va.y - vb.y;
+		
+		return vdiff;
+	},
+	
+	VECTOR2D_Scale: function(k, va, vscaled)
+	{
+		//Функции void VECTOR*D_Scale() масштабируют переданный в качестве параметра va вектор, увеличивая его в k раз, и возвращают масштабированный вектор как vscaled.
+		vscaled.x = k * va.x;
+		vscaled.y = k * va.y;
+	},
+	
+	VECTOR2D_Scale_Single: function(k, va)
+	{
+		va.x *= k;
+		va.y *= k; 
+	},
+	
+	VECTOR2D_Dot: function(va, vb)
+	{
+		//Функции float VECTOR*D_Dot() возвращают результат скалярного произведения двухвекторов. В четырехмерной версии компонента w в вычислении не участвует
+		return ((va.x * vb.x) + (va.y * vb.y));
+	},
+	
+	VECTOR2D_Length: function(va)
+	{
+		return(Math.sqrt(va.x * va.x) + (va.y * va.y));
+	},
+	
+	VECTOR2D_Length_Fast: function(va)
+	{
+		//!!!!!!!Округление
+		return(FastDistance2D(va.x, va.y));
+	},
+	
+	 VECTOR2D_Normalize: function(va)
+	 {
+	 	//Нормализация вектора
+	 	var length = Math.sqrt(va.x * va.x + va.y * va.y);
+	 	
+	 	if (length < Constants.Epsilon_E5) return;
+	 	
+	 	var length_env = (1.0 / length);
+	 	
+	 	va.x = va.x * length_inv;
+	 	va.y = va.y * length_inv;
+	 },
+	 
+	 VECTOR2D_NormalizeAndReturnInVN: function(va, vn)
+	 {
+	 	//Нормализация вектора и его возврат через vn
+	 	VeVector2D_Zero(vn);
+	 	
+	 	var length = Math.sqrt(va.x * va.x + va.y * va.y);
+	 	
+	 	if (length < Constants.Epsilon_E5) return;
+	 	
+	 	var length_inv = 1.0 /length;
+	 	
+	 	vn.x = va.x * length_inv;
+	 	vn.y = va.y * length_inv;
+	 },
+	 
+	 VECTOR2D_Build: function(init, term, result)
+	 {
+	 	//Функции  VECTQR*D_Birild() строят вектор init~>term и сохраняют его в переменной result. Это хороший пример функций, которые могут работать как с векторами, так и с точками —для создания вектора, определяемого двумя точками
+	 	result.x = term.x - init.x;
+	 	result.y = term.y - init.y;
+	 },
+	 
+	 VECTOR2D_CosTh: function(va, vb)
+	 {
+	 	//Функции  VECTOR*D_CosTh() вычисляют косинус угла между двумя векторами
+	 	return(MathLib.VECTOR2D_Dot(va, vb)/(MathLib.VECTOR2D_Length(va) * MathLib.VECTOR2D_Length(vb)));
+	 },
+	 
+	 Vector2D_Print: function(va, name, outputTag)
+	 {
+	 	var OutputNode = document.getElementById(outputTag);
+		var val = document.createElement("p");
+		var OutputString = "";
+		OutputString = OutputString.concat(name, ": x=", va.x.toString(), ", y=", va.y.toString());		
+		val.innerHTML = OutputString;
+		OutputNode.appendChild(val);
+	 },
+	 
+	 VECTOR3D_Add: function(va, vb, vsum)
+	 {
+	 	//Сложение векторов
+	 	vsum.x = va.x + vb.x;
+	 	vsum.y = va.y + vb.y;
+	 	vsum.z = va.z + vb.z;
+	 },
+	 
+	 VECTOR3D_AddAndReturnVector3D: function(va, vb)
+	 {
+	 	var vsum = new Vector3D(0, 0, 0);
+	 	
+	 	vsum.x = va.x + vb.x;
+	 	vsum.y = va.y + vb.y;
+	 	vsum.z = va.z + vb.z;
+	 	
+	 	return vsum;
+	 },
+	 
+	 VECTOR3D_Sub: function(va, vb, vdiff)
+	 {
+	 	//Вычитание векторов
+	 	vdiff.x = va.x - vb.x;
+	 	vdiff.y = va.y - vb.y;
+	 	vdiff.z = va.z - vb.z;
+	 },
+	 
+	 VECTOR3D_SubAndReturnVector3D: function(va, vb)
+	 {
+	 	var vdiff = new Vector3D(0, 0, 0);
+	 	
+	 	vdiff.x = va.x - vb.x;
+	 	vdiff.y = va.y - vb.y;
+	 	vdiff.z = va.z - vb.z;
+	 	
+	 	return vdiff;
+	 },
+	 
+	 VECTOR3D_Scale: function(k, va)
+	 {
+	 	//Масштабирование вектора по коэффициенту к
+	 	va.x *= k;
+	 	va.y *= k;
+	 	va.z *= k;
+	 },
+	 
+	 VECTOR3D_ScaleAndReturnVScaled: function(k, va, vscaled)
+	 {
+	 	vscaled.x = k * va.x;
+	 	vscaled.y = k * va.y;
+	 	vscaled.z = k * va.z;
+	 },
+	 
+	 VECTOR3D_Dot: function(va, vb)
+	 {
+	 	//Скалярное произведение
+	 	return((va.x * vb.x) + (va.y * vb.y) + (va.z * vb.z));
+	 },
+	 
+	 VECTOR3D_Cross: function(va, vb, vn)
+	 {
+	 	//Функции void VECTOR*D_Cross() вычисляют векторное произведение переданных в качестве параметров векторов и сохраняют результат по адресу vn. В четырехмерной версии компонента w в вычислении не участвует
+	 	vn.x = ((va.y * vb.z) - (va.z * vb.y));
+	 	vn.y = -((va.x * vb.z) - (va.z * vb.x));
+	 	vn.z = ((va.y * vb.y) - (va.y * vb.x));
+	 },
+	 
+	 VECTOR3D_CrossAndReturnVector3D: function(va, vb)
+	 {
+	 	var vn = new Vector3D(0, 0, 0);
+	 	
+	 	vn.x =  ( (va.y * vb.z) - (va.z * vb.y) );
+		vn.y = -( (va.x * vb.z) - (va.z * vb.x) );
+		vn.z =  ( (va.x * vb.y) - (va.y * vb.x) ); 
+
+		return(vn);
+	 },
+	 
+	 VECTOR3D_Length: function(va)
+	 {
+	 	return(Math.sqrt(va.x * va.x) + (va.y * va.y) + (va.z * va.z));
+	 },
+	 
+	 VECTOR3D_Normalize: function(va)
+	 {
+	 	var length = Math.sqrt(va.x * va.x) + (va.y * va.y) + (va.z * va.z);
+	 	
+	 	if (length < Constants.Epsilon_E5) return;
+	 	
+	 	var length_inv = 1.0 / length;
+	 	
+	 	va.x *= length_inv;
+		va.y *= length_inv;
+		va.z *= length_inv;
+	 },
+	 
+	 VECTOR3D_NormalizeAndReturnVN: function(va, vn)
+	 {
+	 	Vector3D_Zero(vn);
+	 	
+	 	var length = VECTOR3D_Length(va);
+
+		if (length < EPSILON_E5) return;
+
+		var length_inv = 1.0/length;
+
+		vn.x = va.x * length_inv;
+		vn.y = va.y * length_inv;
+		vn.z = va.z * length_inv;
+	 },
+	 
+	 VECTOR3D_Build: function(init, term, result)
+	 {
+	 	result.x = term.x - init.x;
+	 	result.y = term.y - init.y;
+	 	result.z = term.z - init.x;
+	 },
+	 
+	 VECTOR3D_CosTh: function(va, vb)
+	 {
+	 	// возвращает косинус угла мужду двумя векторами
+	 	return( MathLib.VECTOR3D_Dot(va, vb) / (MathLib.VECTOR3D_Length(va) * MathLib.VECTOR3D_Length(vb)) );
+	 },
+	 
+	 ///////////////////////////////////////////////////4D версии функций//////////////////////////////////////////////////////////////////////////
+	 VECTOR4D_Build: function(VECTOR4D_init, VECTOR4D_term, VECTOR4D_result)
+	 {
+		VECTOR4D_result.x = VECTOR4D_term.x - VECTOR4D_init.x;
+		VECTOR4D_result.y = VECTOR4D_term.y - VECTOR4D_init.y;
+		VECTOR4D_result.z = VECTOR4D_term.z - VECTOR4D_init.z;
+		VECTOR4D_result.w = 1;
+
+	 },
+	 
+	 VECTOR4D_Add: function(VECTOR4D_va, VECTOR4D_vb, VECTOR4D_vsum)
+	 {
+		// прибавляет va к vb и возвращает через vsum
+		VECTOR4D_vsum.x = VECTOR4D_va.x + VECTOR4D_vb.x;
+		VECTOR4D_vsum.y = VECTOR4D_va.y + VECTOR4D_vb.y;
+		VECTOR4D_vsum.z = VECTOR4D_va.z + VECTOR4D_vb.z;
+		VECTOR4D_vsum.w = 1;
+	 },
+	 
+	 VECTOR4D_AddAndReturnVector4D: function(VECTOR4D_va, VECTOR4D_vb)
+	 {
+		// прибавляет ya к yb и взвращает результат через стек
+		var vsum = new VECTOR4D();
+
+		vsum.x = VECTOR4D_va.x + VECTOR4D_vb.x;
+		vsum.y = VECTOR4D_va.y + VECTOR4D_vb.y;
+		vsum.z = VECTOR4D_va.z + VECTOR4D_vb.z;
+		vsum.w = 1;
+
+		return(vsum);
+
+	 },
+	 
+	 VECTOR4D_Sub: function(VECTOR4D_va, VECTOR4D_vb, VECTOR4D_vdiff)
+	 {
+		// вычитает va из vb и возвращает результат через vdiff
+		VECTOR4D_vdiff.x = VECTOR4D_va.x - VECTOR4D_vb.x;
+		VECTOR4D_vdiff.y = VECTOR4D_va.y - VECTOR4D_vb.y;
+		VECTOR4D_vdiff.z = VECTOR4D_va.z - VECTOR4D_vb.z;
+		VECTOR4D_vdiff.w = 1;
+	 },
+	 
+	 VECTOR4D_SubAndReturnVector4D: function(VECTOR4D_va, VECTOR4D_vb)
+	 {
+		// вычитает va из vb и возвращает результат через стек
+		var vdiff = new VECTOR4D();
+
+		vdiff.x = VECTOR4D_va.x - VECTOR4D_vb.x;
+		vdiff.y = VECTOR4D_va.y - VECTOR4D_vb.y;
+		vdiff.z = VECTOR4D_va.z - VECTOR4D_vb.z;
+		vdiff.w = 1;
+
+		return(vdiff);                      
+	 },
+	 
+	 VECTOR4D_Scale: function(/*коэффициента масштабирования*/ k, VECTOR4D_va)
+	 {
+		// масштабирует вектор на заданный коэффициент k
+		
+		// просто умножаем каждый компонент к коэффициент
+		VECTOR4D_va.x*=k;
+		VECTOR4D_va.y*=k;
+		VECTOR4D_va.z*=k;
+		VECTOR4D_va.w = 1; // остается неизменным
+	 },
+	 
+	 VECTOR4D_Scale: function(/*коэффициента масштабирования*/k, VECTOR4D_va, VECTOR4D_vscaled)
+ 	 {
+		// масштабирует вектор на заданный коэффицент k сохраняя оригинал
+
+		// перемножаем каждый компонент на коэффициент
+		VECTOR4D_vscaled.x = k*VECTOR4D_va.x;
+		VECTOR4D_vscaled.y = k*VECTOR4D_va.y;
+		VECTOR4D_vscaled.z = k*VECTOR4D_va.z;
+		VECTOR4D_vscaled.w = 1
+
+	 },
+
+	 VECTOR4D_Dot: function(VECTOR4D_va, VECTOR4D_vb)
+	 {
+		// вычисляет скалярное произведение va и vb
+		return( (VECTOR4D_va.x * VECTOR4D_vb.x) + (VECTOR4D_va.y * VECTOR4D_vb.y) + (VECTOR4D_va.z * VECTOR4D_vb.z) );
+	 },
+	 
+	 VECTOR4D_Cross: function(VECTOR4D_va, VECTOR4D_vb, VECTOR4D_vn)
+ 	{
+		// вычисляет векторное произведение между va и vb
+		// и возвращает результат через vn
+
+		VECTOR4D_vn.x =  ( (VECTOR4D_va.y * VECTOR4D_vb.z) - (VECTOR4D_va.z * VECTOR4D_vb.y) );
+		VECTOR4D_vn.y = -( (VECTOR4D_va.x * VECTOR4D_vb.z) - (VECTOR4D_va.z * VECTOR4D_vb.x) );
+		VECTOR4D_vn.z =  ( (VECTOR4D_va.x * VECTOR4D_vb.y) - (VECTOR4D_va.y * VECTOR4D_vb.x) ); 
+		VECTOR4D_vn.w = 1; // остается неизменным
+	 },
+	 
+	 VECTOR4D_Length: function(VECTOR4D_va)
+ 	 {
+		// вычисляет величину вектора
+
+		return(Math.sqrt(VECTOR4D_va.x*VECTOR4D_va.x + VECTOR4D_va.y*VECTOR4D_va.y + VECTOR4D_va.z*VECTOR4D_va.z) );
+	 },
+	 
+	 VECTOR4D_Length_Fast: function(VECTOR4D_va)
+	 {
+		// вычисляет величину вектора
+		return( MathLib.FastDistance3D(VECTOR4D_va.x, VECTOR4D_va.y, VECTOR4D_va.z) );
+	 },
+	 
+	 VECTOR4D_Normalize: function(VECTOR4D_va)
+	 {
+		// нормализует вектор
+
+		var length = Math.sqrt(VECTOR4D_va.x*VECTOR4D_va.x + VECTOR4D_va.y*VECTOR4D_va.y + VECTOR4D_va.z*VECTOR4D_va.z);
+
+		// есди вектор нулевой длины, то выходим
+		if (length < Constants.EPSILON_E5) 
+   			return;
+
+		var length_inv = 1.0/length;
+
+		VECTOR4D_va.x*=length_inv;
+		VECTOR4D_va.y*=length_inv;
+		VECTOR4D_va.z*=length_inv;
+		VECTOR4D_va.w = 1;
+	 },
+	 
+	 VECTOR4D_NormalizeAndReturnInVN: function(VECTOR4D_va, VECTOR4D_vn)
+	 {
+		// нормализует вектор и возвращает рузельтат через vn
+
+		VECTOR4D_ZERO(vn);
+
+		var length = sqrt(VECTOR4D_va.x*VECTOR4D_va.x + VECTOR4D_va.y*VECTOR4D_va.y + VECTOR4D_va.z*VECTOR4D_va.z);
+
+		if (length < Constants.EPSILON_E5) 
+   			return;
+
+		var length_inv = 1.0/length;
+
+		VECTOR4D_vn.x = VECTOR4D_va.x*length_inv;
+		VECTOR4D_vn.y = VECTOR4D_va.y*length_inv;
+		VECTOR4D_vn.z = VECTOR4D_va.z*length_inv;
+		VECTOR4D_vn.w = 1;
+	 },
+	 
+	 VECTOR4D_CosTh: function(VECTOR4D_va, VECTOR4D_vb)
+	 {
+		// Вычисляет косинус угла между двумя векторами
+		return(MathLib.VECTOR4D_Dot(va,vb)/(MathLib.VECTOR4D_Length(va)*MathLib.VECTOR4D_Length(vb)));
+	 },
+	 
+	 //////////////////////////////////////////Матричные функции/////////////////////////////////////////////////////
+	 //////////////////////////////////////Функции для работы с двумерными матрицами/////////////////////////////////
+	 
+	 Mat_Init_2X2: function(MATRIX2X2_ma, m00, m01, m10, m11)
+	 {
+		// заполняет матрицу 2х2
+		MATRIX2X2_ma.M00 = m00; ma.M01 = m01; 
+		MATRIX2X2_ma.M10 = m10; ma.M11 = m11; 
+
+	 },
+	 
+	 Mat_Add_2X2: function(MATRIX2X2_ma, MATRIX2X2_mb, MATRIX2X2_msum)
+	 {
+		// Складывает две матрицы 2х2 и возвращает через msum
+		MATRIX2X2_msum.M00 = MATRIX2X2_ma.M00+MATRIX2X2_mb.M00;
+		MATRIX2X2_msum.M01 = MATRIX2X2_ma.M01+MATRIX2X2_mb.M01;
+		MATRIX2X2_msum.M10 = MATRIX2X2_ma.M10+MATRIX2X2_mb.M10;
+		MATRIX2X2_msum.M11 = MATRIX2X2_ma.M11+MATRIX2X2_mb.M11;
+	 },
+	 
+	 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 
+	 VECTOR3D_Print: function(va, name, outputTag)
+	{
+		var OutputNode = document.getElementById(outputTag);
+		var val = document.createElement("p");
+		var OutputString = "";
+		OutputString = OutputString.concat(name, ": x=", va.x.toString(), ", y=", va.y.toString(), ", z=", va.z.toString());		
+		val.innerHTML = OutputString;
+		OutputNode.appendChild(val);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}
+
+
