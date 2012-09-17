@@ -529,28 +529,28 @@ MathLib = {
 	 Mat_Init_2X2: function(MATRIX2X2_ma, m00, m01, m10, m11)
 	 {
 		// заполняет матрицу 2х2
-		MATRIX2X2_ma.M00 = m00; ma.M01 = m01; 
-		MATRIX2X2_ma.M10 = m10; ma.M11 = m11; 
+		MATRIX2X2_ma.M[0][0] = m[0][0]; ma.M[0][1] = m[0][1]; 
+		MATRIX2X2_ma.M[1][0] = m[1][0]; ma.M[1][1] = m[1][1]; 
 
 	 },
 	 
 	 Mat_Add_2X2: function(MATRIX2X2_ma, MATRIX2X2_mb, MATRIX2X2_msum)
 	 {
 		// Складывает две матрицы 2х2 и возвращает через msum
-		MATRIX2X2_msum.M00 = MATRIX2X2_ma.M00+MATRIX2X2_mb.M00;
-		MATRIX2X2_msum.M01 = MATRIX2X2_ma.M01+MATRIX2X2_mb.M01;
-		MATRIX2X2_msum.M10 = MATRIX2X2_ma.M10+MATRIX2X2_mb.M10;
-		MATRIX2X2_msum.M11 = MATRIX2X2_ma.M11+MATRIX2X2_mb.M11;
+		MATRIX2X2_msum.M[0][0] = MATRIX2X2_ma.M[0][0]+MATRIX2X2_mb.M[0][0];
+		MATRIX2X2_msum.M[0][1] = MATRIX2X2_ma.M[0][1]+MATRIX2X2_mb.M[0][1];
+		MATRIX2X2_msum.M[1][0] = MATRIX2X2_ma.M[1][0]+MATRIX2X2_mb.M[1][0];
+		MATRIX2X2_msum.M[1][1] = MATRIX2X2_ma.M[1][1]+MATRIX2X2_mb.M[1][1];
 	 },
 
 	 Mat_Mul_2X2: function(MATRIX2X2_ma, MATRIX2X2_mb, MATRIX2X2_mprod)
 	 {
 		// Перемножает две матрицы 2х2 и возвращает через mprod
-		MATRIX2X2_mprod.M00 = MATRIX2X2_ma.M00*MATRIX2X2_mb.M00 + MATRIX2X2_ma.M01*MATRIX2X2_mb.M10;
-		MATRIX2X2_mprod.M01 = MATRIX2X2_ma.M00*MATRIX2X2_mb.M01 + MATRIX2X2_ma.M01*MATRIX2X2_mb.M11;
+		MATRIX2X2_mprod.M[0][0] = MATRIX2X2_ma.M[0][0]*MATRIX2X2_mb.M[0][0] + MATRIX2X2_ma.M[0][1]*MATRIX2X2_mb.M[1][0];
+		MATRIX2X2_mprod.M[0][1] = MATRIX2X2_ma.M[0][0]*MATRIX2X2_mb.M[0][1] + MATRIX2X2_ma.M[0][1]*MATRIX2X2_mb.M[1][1];
 
-		MATRIX2X2_mprod.M10 = MATRIX2X2_ma.M10*MATRIX2X2_mb.M00 + MATRIX2X2_ma.M11*MATRIX2X2_mb.M10;
-		MATRIX2X2_mprod.M11 = MATRIX2X2_ma.M10*MATRIX2X2_mb.M01 + MATRIX2X2_ma.M11*MATRIX2X2_mb.M11;
+		MATRIX2X2_mprod.M[1][0] = MATRIX2X2_ma.M[1][0]*MATRIX2X2_mb.M[0][0] + MATRIX2X2_ma.M[1][1]*MATRIX2X2_mb.M[1][0];
+		MATRIX2X2_mprod.M[1][1] = MATRIX2X2_ma.M[1][0]*MATRIX2X2_mb.M[0][1] + MATRIX2X2_ma.M[1][1]*MATRIX2X2_mb.M[1][1];
 	 },
 
 	 Mat_Inverse_2X2: function(MATRIX2X2_m, MATRIX2X2_mi)
@@ -593,7 +593,6 @@ MathLib = {
 		a1x + b1y = s1
 		a2x + b2y = s2
 
-
 		На первом шаге вычислим определитель:
 		    
 		    |a1 b1|
@@ -603,7 +602,6 @@ MathLib = {
 		, его называют главным определителем системы. 
 
 		Если Δ = 0, то система имеет бесконечно много решений или несовместна (не имеет решений). В этом случае правило Крамера не поможет, нужно использовать метод Гаусса.
-
 		Если Δ ≠ 0, то система имеет единственное решение, и для нахождения корней мы должны вычислить еще два определителя:
 
 		     |s1 b1|	    |a1 s1|
@@ -657,13 +655,13 @@ MathLib = {
 		return(1);
 		
 		/*
-		 * var det_A = Mat_Det_2x2(MATRIX2X2_A);
+		 * var det_A = this.Mat_Det_2x2(MATRIX2X2_A);
 		 * 
 		 * if (Math.abs(det_A) < Constants.Epsilon_E5)
 		 * 		return(0);
 		 * 
-		 * MATRIX1X2_X.M00 = (MATRIX1X2_B.M00*MATRIX1X2_A.M11 - MATRIX1X2_B.M01*MATRIX1X2_A.M01)/det_A;
-		 * MATRIX1X2_X.M01 = (MATRIX1X2_B.M01*MATRIX1X2_A.M00 - MATRIX1X2_B.M00*MATRIX1X2_A.M10)/det_A;
+		 * MATRIX1X2_X.M[0][0] = (MATRIX1X2_B.M[0][0]*MATRIX1X2_A.M[1][1] - MATRIX1X2_B.M[0][1]*MATRIX1X2_A.M[0][1])/det_A;
+		 * MATRIX1X2_X.M[0][1] = (MATRIX1X2_B.M[0][1]*MATRIX1X2_A.M[0][0] - MATRIX1X2_B.M[0][0]*MATRIX1X2_A.M[1][0])/det_A;
 		 * 
 		 * return(1);
 		 */
