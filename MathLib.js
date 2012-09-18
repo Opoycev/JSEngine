@@ -361,6 +361,8 @@ MathLib = {
 	 
 	 VECTOR3D_Build: function(init, term, result)
 	 {
+	 	// Создает вектор из двух точек или двух векторов в трехмерном пространстве
+
 	 	result.x = term.x - init.x;
 	 	result.y = term.y - init.y;
 	 	result.z = term.z - init.x;
@@ -968,6 +970,128 @@ MathLib = {
 
 	    VECTOR4D_vprod.M[3] = va.M[3];
 	 },
+
+	 Mat_Init_4X4: function(MATRIX4X4_ma,  m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
+	 {
+		// Инициализация матрици 4х4 значениями
+		MATRIX4X4_ma.M00 = m00; MATRIX4X4_ma.M01 = m01; MATRIX4X4_ma.M02 = m02; MATRIX4X4_ma.M03 = m03;
+		MATRIX4X4_ma.M10 = m10; MATRIX4X4_ma.M11 = m11; MATRIX4X4_ma.M12 = m12; MATRIX4X4_ma.M13 = m13;
+		MATRIX4X4_ma.M20 = m20; MATRIX4X4_ma.M21 = m21; MATRIX4X4_ma.M22 = m22; MATRIX4X4_ma.M23 = m23;
+		MATRIX4X4_ma.M30 = m30; MATRIX4X4_ma.M31 = m31; MATRIX4X4_ma.M32 = m32; MATRIX4X4_ma.M33 = m33;
+	 },
+
+	 Mat_Inverse_4X4: function(MATRIX4X4_m, MATRIX4X4_mi)
+	 {
+		// Вычисляет обратную матрицу
+		// Предполагается, что последняя колонка [0 0 0 1]
+
+		var det =  ( MATRIX4X4_m.M00 * ( MATRIX4X4_m.M11 * MATRIX4X4_m.M22 - MATRIX4X4_m.M12 * MATRIX4X4_m.M21 ) -
+		               MATRIX4X4_m.M01 * ( MATRIX4X4_m.M10 * MATRIX4X4_m.M22 - MATRIX4X4_m.M12 * MATRIX4X4_m.M20 ) +
+		               MATRIX4X4_m.M02 * ( MATRIX4X4_m.M10 * MATRIX4X4_m.M21 - MATRIX4X4_m.M11 * MATRIX4X4_m.M20 ) );
+
+		if (Math.abs(det) < Constants.Epsilon_E5)
+		   return(0);
+
+		var det_inv  = 1 / det;
+
+		MATRIX4X4_mi.M[0][0] =  det_inv * ( MATRIX4X4_m.M[1][1] * MATRIX4X4_m.M[2][2] - MATRIX4X4_m.M[1][2] * MATRIX4X4_m.M[2][1] );
+		MATRIX4X4_mi.M[0][1] = -det_inv * ( MATRIX4X4_m.M[0][1] * MATRIX4X4_m.M[2][2] - MATRIX4X4_m.M[0][2] * MATRIX4X4_m.M[2][1] );
+		MATRIX4X4_mi.M[0][2] =  det_inv * ( MATRIX4X4_m.M[0][1] * MATRIX4X4_m.M[1][2] - MATRIX4X4_m.M[0][2] * MATRIX4X4_m.M[1][1] );
+		MATRIX4X4_mi.M[0][3] = 0; // всегда 0
+
+		MATRIX4X4_mi.M[1][0] = -det_inv * ( MATRIX4X4_m.M[1][0] * MATRIX4X4_m.M[2][2] - MATRIX4X4_m.M[1][2] * MATRIX4X4_m.M[2][0] );
+		MATRIX4X4_mi.M[1][1] =  det_inv * ( MATRIX4X4_m.M[0][0] * MATRIX4X4_m.M[2][2] - MATRIX4X4_m.M[0][2] * MATRIX4X4_m.M[2][0] );
+		MATRIX4X4_mi.M[1][2] = -det_inv * ( MATRIX4X4_m.M[0][0] * MATRIX4X4_m.M[1][2] - MATRIX4X4_m.M[0][2] * MATRIX4X4_m.M[1][0] );
+		MATRIX4X4_mi.M[1][3] = 0; // всегда 0
+
+		MATRIX4X4_mi.M[2][0] =  det_inv * ( MATRIX4X4_m.M[1][0] * MATRIX4X4_m.M[2][1] - MATRIX4X4_m.M[1][1] * MATRIX4X4_m.M[2][0] );
+		MATRIX4X4_mi.M[2][1] = -det_inv * ( MATRIX4X4_m.M[0][0] * MATRIX4X4_m.M[2][1] - MATRIX4X4_m.M[0][1] * MATRIX4X4_m.M[2][0] );
+		MATRIX4X4_mi.M[2][2] =  det_inv * ( MATRIX4X4_m.M[0][0] * MATRIX4X4_m.M[1][1] - MATRIX4X4_m.M[0][1] * MATRIX4X4_m.M[1][0] );
+		MATRIX4X4_mi.M[2][3] = 0; // всегда 0
+
+		MATRIX4X4_mi.M[3][0] = -( MATRIX4X4_m.M[3][0] * MATRIX4X4_mi.M[0][0] + MATRIX4X4_m.M[3][1] * MATRIX4X4_mi.M[1][0] + MATRIX4X4_m.M[3][2] * MATRIX4X4_mi.M[2][0] );
+		MATRIX4X4_mi.M[3][1] = -( MATRIX4X4_m.M[3][0] * MATRIX4X4_mi.M[0][1] + MATRIX4X4_m.M[3][1] * MATRIX4X4_mi.M[1][1] + MATRIX4X4_m.M[3][2] * MATRIX4X4_mi.M[2][1] );
+		MATRIX4X4_mi.M[3][2] = -( MATRIX4X4_m.M[3][0] * MATRIX4X4_mi.M[0][2] + MATRIX4X4_m.M[3][1] * MATRIX4X4_mi.M[1][2] + MATRIX4X4_m.M[3][2] * MATRIX4X4_mi.M[2][2] );
+		MATRIX4X4_mi.M[3][3] = 1; // всегда 0
+
+		return(1);
+	 },
+
+	 Init_Parm_Line2D: function(POINT2D_init, POINT2D_term, PARMLINE2D_p)
+ 	{
+		// Инициализирует двухмерную прямую.
+
+		// начальная точка
+		VECTOR2D_INIT(PARMLINE2D_p.p[0], POINT2D_init);
+
+		// конечная точка
+		VECTOR2D_INIT(PARMLINE2D_p.p[1], POINT2D_term);
+
+		// вычисляем направление вектора p0->p1
+		VECTOR2D_Build(POINT2D_init, POINT2D_term, PARMLINE2D_p.v);
+	 },
+
+	 Init_Parm_Line3D: function(POINT3D_init, POINT3D_term, PARMLINE3D_p)
+	 {
+		// Инициализирует трехмерную прямую
+
+		// начальная точка
+		VECTOR3D_INIT(PARMLINE3D_p.p0, p_init);
+
+		// конечная точка
+		VECTOR3D_INIT(PARMLINE3D_p.p1,p_term);
+
+		// вычисляет напрпвление p0->p1
+		VECTOR3D_Build(POINT3D_init, POINT3D_term, PARMLINE3D_p.v);
+	 },
+
+	 Compute_Parm_Line2D: function(PARMLINE2D_p, t, POINT2D_pt)
+ 	 {
+		// Вычисляет значение переданнй параметрической линии в точке t
+
+		POINT2D_pt.x = PARMLINE2D_p.p0.x + PARMLINE2D_p.v.x * t;
+		POINT2D_pt.y = PARMLINE2D_p.p0.y + PARMLINE2D_p.v.y * t;
+	 },
+
+	 Compute_Parm_Line3D: function(PARMLINE3D_p, t, POINT3D_pt)
+	 {
+		// Вычисляет значение переданнй параметрической линии в точке t
+
+		POINT3D_pt.x = PARMLINE3D_p.p0.x + PARMLINE3D_p.v.x * t;
+		POINT3D_pt.y = PARMLINE3D_p.p0.y + PARMLINE3D_p.v.y * t;
+		POINT3D_pt.z = PARMLINE3D_p.p0.z + PARMLINE3D_p.v.z * t;
+	 },
+
+	 Intersect_Parm_Lines2D: function(PARMLINE2D_p1, PARMLINE2D_p2, t1, t2)
+	 {
+		// Вычисляет точку пересечение отрезков двух прямых и возвращает true, если прямые пересекаются
+		// При этом занчения t1 м t2 соответствуют точке пересечения. Параметры могут выходить за пределы 
+		// диапазона [0, 1], что несмотря на пересечение прямых, отрезки не пересекаются.
+		// 0 - Пересечений нет
+		// 1 - Пересечение отрезков
+		// 2 - Пересечение прямых, но не отрезков
+
+		// Шаг 1: проверка на параллельность прямых
+		var det_p1p2 = (PARMLINE2D_p1.v.x*PARMLINE2D_p2.v.y - PARMLINE2D_p1.v.y*PARMLINE2D_p2.v.x);
+		if (Math.abs(det_p1p2) <= Constants.Epsilon_E5)
+		   {
+			   return(0); // Пересечений нет
+
+		   }
+
+		// Шаг 2: Вычисление значений t1 и t2
+		t1 = (PARMLINE2D_p2.v.x*(PARMLINE2D_p1.p0.y - PARMLINE2D_p2.p0.y) - PARMLINE2D_p2.v.y*(PARMLINE2D_p1.p0.x - PARMLINE2D_p2.p0.x)) /det_p1p2;
+
+		t2 = (PARMLINE2D_p1.v.x*(PARMLINE2D_p1.p0.y - PARMLINE2D_p2.p0.y) - PARMLINE2D_p1.v.y*(PARMLINE2D_p1.p0.x - PARMLINE2D_p2.p0.x))/det_p1p2;
+
+		// проверка на пересечение
+		if ((t1>=0) && (t1<=1) && (t2>=0) && (t2<=1))
+		   return(1); // Пересечение отрезков
+		else
+		   return(2); // Пересечение прямых, но не отрезков
+	 },
+
+	 
 
 	 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	 
