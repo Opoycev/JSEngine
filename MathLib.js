@@ -574,6 +574,7 @@ MathLib = {
 		return(1);
 	 },
 
+	 // [Tested]
 	 Mat_Det_2X2: function(MATRIX2X2_m)
 	 {
 		// Вычисляет детерминант матрицы 2х2
@@ -601,7 +602,8 @@ MathLib = {
 
 		, его называют главным определителем системы. 
 
-		Если Δ = 0, то система имеет бесконечно много решений или несовместна (не имеет решений). В этом случае правило Крамера не поможет, нужно использовать метод Гаусса.
+		Если Δ = 0, то система имеет бесконечно много решений или несовместна (не имеет решений). 
+		В этом случае правило Крамера не поможет, нужно использовать метод Гаусса.
 		Если Δ ≠ 0, то система имеет единственное решение, и для нахождения корней мы должны вычислить еще два определителя:
 
 		     |s1 b1|	    |a1 s1|
@@ -666,7 +668,307 @@ MathLib = {
 		 * return(1);
 		 */
 	 }, 
+
+	 Mat_Add_3X3: function(MATRIX3X3_ma, MATRIX3X3_mb, MATRIX3X3_msum)
+	 {
+		// Складывает две матрицы 3х3 и возвращает через msum
+
+		for (var row = 0; row < 3; row++)
+    	 {
+    		for (var col = 0; col < 3; col++)
+        	 {
+        		MATRIX3X3_msum.M[row][col] = MATRIX3X3_ma.M[row][col] + MATRIX3X3_mb.M[row][col];
+        	 }
+
+    	 }
+
+	 },
+
+	 Mat_Mul_VECTOR3D_3X3: function(VECTOR3D_va, MATRIX3X3_mb, VECTOR3D_mprod)
+	 {
+		// Перемножает вектор на матрицу 3х3 и возвращает через mprod
+    	for (var col = 0; col < 3; col++)
+        {
+        	// Вычисляем скалярное произведение
+        	var sum = 0;
+        	for (var row = 0; row < 3; row++)
+            {
+             	sum += (VECTOR3D_va.M[row] * MATRIX3X3_mb.M[row][col]);
+            }
+
+        	// Сохраняем результат
+        	VECTOR3D_mprod.M[col] = sum;
+        }
+	 },
+
+	 Mat_Init_3X3: function(MATRIX3X3_ma, m00, m01, m02, m10, m11, m12, m20, m21, m22)
+	 {
+		// Инициализация матрицы 3х3 значениями
+
+		MATRIX3X3_maюM00 = m00; MATRIX3X3_maюM01 = m01; MATRIX3X3_maюM02 = m02;
+		MATRIX3X3_maюM10 = m10; MATRIX3X3_maюM11 = m11; MATRIX3X3_maюM12 = m12;
+		MATRIX3X3_maюM20 = m20; MATRIX3X3_maюM21 = m21; MATRIX3X3_maюM22 = m22;
+	 },
+
+	 Mat_Inverse_3X3: function(MATRIX3X3_m, MATRIX3X3_mi)
+	 {
+		// Вычисляет обратнцю матрицу 3х3
+
+		// сначала находим определитель
+		var det = MATRIX3X3_m.M[0][0]*(MATRIX3X3_m.M[1][1]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][1]*MATRIX3X3_m.M[1][2]) - 
+            	MATRIX3X3_m.M[0][1]*(MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][0]*MATRIX3X3_m.M[1][2]) + 
+            	MATRIX3X3_m.M[0][2]*(MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[2][1] - MATRIX3X3_m.M[2][0]MATRIX3X3_m.M[1][1]);
+
+		if (Math.abs(det) < Constants.Epsilon_E5)
+   			return(0);
+
+		var det_inv = 1.0/det;
+
+		// 
+		MATRIX3X3_mi.M[0][0] =  det_inv*(MATRIX3X3_m.M[1][1]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][1]*MATRIX3X3_m.M[1][2]);
+		MATRIX3X3_mi.M[1][0] = -det_inv*(MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][0]*MATRIX3X3_m.M[1][2]);
+		MATRIX3X3_mi.M[2][0] =  det_inv*(MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[2][1] - MATRIX3X3_m.M[2][0]*MATRIX3X3_m.M[1][1]);
+
+		MATRIX3X3_mi.M[0][1] = -det_inv*(MATRIX3X3_m.M[0][1]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][1]*MATRIX3X3_m.M[0][2]);
+		MATRIX3X3_mi.M[1][1] =  det_inv*(MATRIX3X3_m.M[0][0]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][0]*MATRIX3X3_m.M[0][2]);
+		MATRIX3X3_mi.M[2][1] = -det_inv*(MATRIX3X3_m.M[0][0]*MATRIX3X3_m.M[2][1] - MATRIX3X3_m.M[2][0]*MATRIX3X3_m.M[0][1]);
+
+		MATRIX3X3_mi.M[0][2] =  det_inv*(MATRIX3X3_m.M[0][1]*MATRIX3X3_m.M[1][2] - MATRIX3X3_m.M[1][1]*MATRIX3X3_m.M[0][2]);
+		MATRIX3X3_mi.M[1][2] = -det_inv*(MATRIX3X3_m.M[0][0]*MATRIX3X3_m.M[1][2] - MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[0][2]);
+		MATRIX3X3_mi.M[2][2] =  det_inv*(MATRIX3X3_m.M[0][0]*MATRIX3X3_m.M[1][1] - MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[0][1]);
+
+		return(1);
+	 },
+
+	 Mat_Det_3X3: function(MATRIX3X3_m)
+	 {
+		// Вычилсяем определитель матрицы
+
+		return(MATRIX3X3_m.M[0][0]*(MATRIX3X3_m.M[1][1]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][1]*MATRIX3X3_m.M[1][2]) - 
+       		   MATRIX3X3_m.M[0][1]*(MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][0]*MATRIX3X3_m.M[1][2]) + 
+       		   MATRIX3X3_m.M[0][2]*(MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[2][1] - MATRIX3X3_m.M[2][0]*MATRIX3X3_m.M[1][1]) );
+	 },
+
+	 Solve_3X3_System: function(MATRIX3X3_A, MATRIX1X3_X, MATRIX1X3_B)
+	 {
+		// Решает систему линейных уравнений А*В=Х, где А имеет размер 3х3, а матрицы В и Х размер 1х3.
+		// Если решение существует, оно сохраняется в матрице Х.
+
+		// Шаг 1: вычиляем определитель
+		float det_A = Mat_Det_3X3(A);
+
+		// проверка определителя на 0 (елси это так, то решения не существует)
+		if (fabs(det_A) < EPSILON_E5)
+		   return(0);
+
+		// Шаг 2: создаем матрицы-числители путем заменыс соответствующих столбцов матрицы А транспонированной
+		// матрицей В и находим решение системы
+		var work_mat = new Matrix3x3();
+
+		// решение для x /////////////////
+
+		// копируем матрицу MATRIX3X3_A в рабочую
+		MAT_COPY_3X3(work_mat, MATRIX3X3_A);
+
+		// замена первого столбца (столбец х)
+		MAT_COLUMN_SWAP_3X3(work_mat, 0, MATRIX1X3_B);
+
+		// вычисляем определитель
+		var det_ABx = this.Mat_Det_3X3(work_mat);
+
+		// решение записываем в  MATRIX1X3_X.M[0][0]
+		MATRIX1X3_X.M[0][0] = det_ABx/det_A;
+
+		// решение для y /////////////////
+
+		// копируем матрицу MATRIX3X3_A в рабочую
+		MAT_COPY_3X3(work_mat, MATRIX3X3_A);
+
+		// замена второго столбца (столбец y)
+		MAT_COLUMN_SWAP_3X3(work_mat, 1, MATRIX1X3_B);
+
+		// находим определитель
+		var det_ABy = this.Mat_Det_3X3(work_mat);
+
+		// решение записываем в MATRIX1X3_X.M[0][1]
+		MATRIX1X3_X.M[0][1] = det_ABy/det_A;
+
+		// решение для z /////////////////
+
+		// копируем матрицу MATRIX3X3_A в рабочцю
+		MAT_COPY_3X3(work_mat, MATRIX3X3_A);
+
+		// заменяем третий столбец
+		MAT_COLUMN_SWAP_3X3(work_mat, 2, MATRIX1X3_B);
+
+		// вычисляем определитель
+		var det_ABz = this.Mat_Det_3X3(work_mat);
+
+		// решаем систему для MATRIX1X3_X.M[0][2]
+		MATRIX1X3_X.M[0][2] = det_ABz/det_A;
+
+		return(1);
+ 	},
+
+ 	Mat_Add_4X4: function(MATRIX4X4_ma, MATRIX4X4_mb, MATRIX4X4_msum)
+	 {
+		// Складывает две матрицы 4x4 и возвращает через msum
+		for (var row = 0; row < 4; row++)
+		    {
+		    for (var col = 0; col < 4; col++)
+		        {
+		        	MATRIX4X4_msum.M[row][col] = MATRIX4X4_ma.M[row][col] + MATRIX4X4_mb.M[row][col];
+		        }
+		    }
+	 },
+
+	 Mat_Mul_4X4: function(MATRIX4X4_ma, MATRIX4X4_mb, MATRIX4X4_mprod)
+	 {
+		// Перемножает две матрицы 4х4 и возвращает через mprod
+
+		for (var row = 0; row < 4; row++)
+		{
+		    for (var col = 0; col < 4; col++)
+		    {
+		        // вычисляем скалярное произведение строки ma 
+		        // и столбца mb
+		        var sum = 0;
+		        for (int index = 0; index < 4; index++)
+			     {
+			          sum += (MATRIX4X4_ma.M[row][index] * MATRIX4X4_mb.M[index][col]);
+			     }
+
+		        MATRIX4X4_mprod.M[row][col] = sum;
+		    }
+		}
+	 },
+
+	 Mat_Mul_1X4_4X4: function(MATRIX1X4_ma, MATRIX4X4_mb, MATRIX1X4_mprod)
+	 {
+		// Перемножает матрицу размером 1х4 и 4х4 - ma*mb и возвращает через mprod
+
+	    for (var col = 0; col < 4; col++)
+	    {
+		    // вычисляем скалярное произведение строки ma 
+		    // и столбца mb
+		    var sum = 0;
+		    for (var row = 0; row < 4; row++)
+		    {
+		    	sum += (MATRIX1X4_ma.M[row] * MATRIX4X4_mb.M[row][col]);
+		    }
+
+		    MATRIX1X4_mprod.M[col] = sum;
+	    }
+	 },
+
+	 Mat_Mul_VECTOR3D_4X4: function(VECTOR3D_va, MATRIX4X4_mb, VECTOR3D_vprod)
+	 {
+		// Умножает VECTOR3D на матрицу размером 
+		// 4x4 matrix - ma*mb и возвращает результат через mprod
+		// Функция предполагает, что вектор однородный
+		// Предполагается, что w=1
+		
+		 for (var col = 0; col < 3; col++)
+		 {
+			 // вычисляет скалярное произведение строки ma и столбца mb
+			 var sum = 0;
+
+			 for (var row = 0; row < 3; row++)
+			 {
+			     sum += (VECTOR3D_va.M[row] * MATRIX4X4_mb.M[row][col]);
+			 }
+
+			 sum += MATRIX4X4_mb.M[row][col];    
+			 VECTOR3D_vprod.M[col] = sum;
+		 }
+	 },
+
+	 Mat_Mul_VECTOR3D_4X3: function(VECTOR3D_va, MATRIX4X3_mb, VECTOR3D_vprod)
+	 {
+		// Перемножает VECTOR3D и матрицу
+		// 4x3 matrix - ma*mb и возвращает через vprod
+		// Функция предполагает, что вектор однородный
+		// Предполагается, что w=1
+
+		for (var col = 0; col < 3; col++)
+		{
+		    // вычисляет скалярное произведение строки ma и столбца mb
+		    var sum = 0;
+
+		    for (var row = 0; row < 3; row++)
+		    {
+			    sum += (VECTOR3D_va.M[row] * MATRIX4X3_mb.M[row][col]);
+		    }
+
+		    sum += MATRIX4X3_mb.M[row][col];    
+		    VECTOR3D_vprod.M[col] = sum;
+		}
+	 },
+
+	 Mat_Mul_VECTOR4D_4X4: function(VECTOR4D_va, MATRIX4X4_mb, VECTOR4D_vprod)
+	 {
+		// Перемножает VECTOR4D на матрицу размером 
+		// 4x4 - ma*mb и возвращает через mprod
+
+	    for (var col = 0; col < 4; col++)
+	    {
+		    // вычисляем скалярное произведение строки ma и столбца mb
+		    var sum = 0;
+
+		    for (var row = 0; row < 4; row++)
+		    {
+			    sum += (VECTOR4D_va.M[row] * MATRIX4X4_mb.M[row][col]);
+		    }
+
+		    VECTOR4D_vprod.M[col] = sum;
+	    }
+	 },
 	 
+	 Mat_Mul_VECTOR4D_4X3: function(VECTOR4D_va, MATRIX4X4_mb, VECTOR4D_vprod)
+	 {
+		// Перемножает VECTOR4D и матрицу размером
+		// 4x3 - ma*mb и возвращает через mprod
+		// Предполагается, что последний столбец матрицы
+		// mb равен [0 0 0 1] , w копируется из вектора [x y z w]
+
+	    for (var col=0; col < 3; col++)
+	    {
+		    // вычисляем скалярное произведение строки ma и столбца mb
+		    var sum = 0;
+		    for (var row = 0; row < 4; row++)
+		    {
+			    sum += (VECTOR4D_va.M[row] * MATRIX4X4_mb.M[row][col]);
+		    }
+
+		    VECTOR4D_vprod.M[col] = sum;
+	    }
+
+	    VECTOR4D_vprod.M[3] = va.M[3];
+	 },
+
+	 Mat_Mul_VECTOR4D_4X3: function(VECTOR4D_va, MATRIX4X4_mb, VECTOR4D_vprod)
+	 {
+		// Перемножает VECTOR4D и матрицу
+		// 4x3 - ma*mb и возвращает вектор через mprod
+		// Предполагает, что последний столбец
+		// mb равен [0 0 0 1] , w копируется из вектора [x y z w]
+
+	    for (var col = 0; col < 3; col++)
+	    {
+		     // вычисляет скалярное произведение строки ma и столбца mb
+		     var sum = 0;
+
+		     for (var row = 0; row < 4; row++)
+		     {
+			     sum+=(VECTOR4D_va.M[row]*MATRIX4X4_mb.M[row][col]);
+		     }
+
+		     VECTOR4D_vprod.M[col] = sum;
+	    }
+
+	    VECTOR4D_vprod.M[3] = va.M[3];
+	 },
+
 	 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	 
 	 VECTOR3D_Print: function(va, name, outputTag)
