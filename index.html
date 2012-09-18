@@ -10,35 +10,29 @@
         <script type="text/javascript" src="Constants.js"></script>
         
         <script type="text/javascript">
-        var FastDistance2D = function(x, y)
+        var test = function()
 	{
 
-		var x = Math.abs(x);
-		var y = Math.abs(y);
+		var a = new Matrix2x2();
+		a.M = [[506, 66], [66, 11]];
+		var b = new Matrix1x2();
+		b.M = [2315.1, 392.3];
 		
-		var mn = Min(x, y); //Math.Min?
+		var result = new Matrix1x2();
 		
-		return (x + y - (mn >> 1) - (mn >> 2) + (mn >> 4));
+		MathLib.Solve_2X2_System(a, result, b);
+		
+		return (1);
 			
 	}
-        	var out = function() 
-				{
-					var DateElement = document.getElementById("DatePlace");
-					var val = document.createElement("p");
-					
-					var dist = MathLib.FastDistance2D(2, 3);
-					
-					val.innerHTML = dist.toString();
-					DateElement.appendChild(val);
-					
-				}
+
 				
 				
         </script>
     </head>
     <body>
         <h1>Отладка математической библиотеки</h1>
-        <input value="Date" type="button" onclick="out();" />
+        <input value="Date" type="button" onclick="test();" />
         
         <div id="DatePlace"> </div>
         <!--<div id="Content"></div>-->
