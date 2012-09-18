@@ -278,6 +278,7 @@ function MAT_TRANSPOSE_4X4_FROM_MATRIX(matrix4x4dest, matrix4x4source)
 }
 
 //Обмен столбцов
+// [Tested]
 function MAT_COLUMN_SWAP_2X2(matrix2x2, c, matrix1x2)
 {
 	matrix2x2.M[0][c] = matrix1x2.M[0]; matrix2x2.M[1][c] = matrix1x2.M[1];
