@@ -1519,7 +1519,7 @@ MathLib = {
 		y = r*Math.sin(SPHERICAL3D_sph.theta);
 	 },
 
-	 [Use Math.atan2(POINT3D_rect.y, POINT3D_rect.x)]
+	 // [Use Math.atan2(POINT3D_rect.y, POINT3D_rect.x)]
 	 POINT3D_To_SphericalPThPh: function(POINT3D_rect, p, theta, phi)
 	 {
 		// Преобразует декартову систему в явные занчения сферической системы и возваращает их через p, theta и phi
