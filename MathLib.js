@@ -1091,9 +1091,296 @@ MathLib = {
 		   return(2); // Пересечение прямых, но не отрезков
 	 },
 
-	 
+	 // [Need to test]
+	Intersect_Parm_Lines2DAndReturnPoint2D: function(PARMLINE2D_p1, PARMLINE2D_p2, POINT2D_pt)
+	 {
 
-	 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		var t1, t2;
+		var det_p1p2 = PARMLINE2D_p1.v.x*PARMLINE2D_p2.v.y - PARMLINE2D_p1.v.y*PARMLINE2D_p2.v.x);
+
+		if (Math.abs(det_p1p2) <= Constants.Epsilon_E5)
+		   {
+		   		return 0; //(PARM_LINE_NO_INTERSECT);	
+		   }
+
+		t1 = (PARMLINE2D_p2.v.x*(PARMLINE2D_p1.p0.y - PARMLINE2D_p2.p0.y) - PARMLINE2D_p2.v.y*(PARMLINE2D_p1.p0.x - PARMLINE2D_p2.p0.x))/det_p1p2;
+
+		t2 = (PARMLINE2D_p1.v.x*(PARMLINE2D_p1.p0.y - PARMLINE2D_p2.p0.y) - PARMLINE2D_p1.v.y*(PARMLINE2D_p1.p0.x - PARMLINE2D_p2.p0.x))/det_p1p2;
+
+		POINT2D_pt.x = PARMLINE2D_p1.p0.x + PARMLINE2D_p1.v.x*t1;
+		POINT2D_pt.y = PARMLINE2D_p1.p0.y + PARMLINE2D_p1.v.y*t1;
+
+		if ((t1>=0) && (t1<=1) && (t2>=0) && (t2<=1))
+		   return 1;
+		else
+		   return 2;
+	 },
+
+	 // [Need to test]
+	 PLANE3D_Init: function(PLANE3D_plane, POINT3D_p0, VECTOR3D_normal, normalize)
+	 {
+		// Инициализирует двухмерную плоскость
+
+		// Значение по умалчанию
+		normalize = 0;
+
+		POINT3D_COPY(PLANE3D_plane.p0, POINT3D_p0);
+
+		if (!normalize)
+		   		VECTOR3D_COPY(PLANE3D_plane.n, VECTOR3D_normal);
+		else
+		   {
+		   		VECTORECTOR3D_Normalize(VECTOR3D_normal,PLANE3D_plane.n);
+		   }
+	 },
+
+	 // Need to test
+	 Compute_Point_In_Plane3D: function(POINT3D_pt, PLANE3D_plane)
+	 {
+	 	// Опредеяет полупростарнство в котором находится точка POINT3D_pt
+	 	// Возвращает 0.0, если точка лежит на плоскости , положительное число, если точка находится в положительном
+	 	// полупространстве и отрицательное - если в отрицательном
+
+		 var hs = PLANE3D_plane.n.x*(POINT3D_pt.x - PLANE3D_plane.p0.x) + 
+		           PLANE3D_plane.n.y*(POINT3D_pt.y - PLANE3D_plane.p0.y) +
+		           PLANE3D_plane.n.z*(POINT3D_pt.z - PLANE3D_plane.p0.z); 
+
+		// вернуть занчение полуаространства
+		return(hs);
+
+	 },
+
+	 // Need to test
+	 Intersect_Parm_Line3D_Plane3D: function(PARMLINE3D_pline, PLANE3D_plane, t, POINT3D_pt)
+	 {
+	 	// Определяет где параметрическая прямая пересекает полоскость.
+	 	// 0 - пересечений нет
+	 	// 1 - пересечение отрезка и плоскости
+	 	// 2 - точка пересечения находится вне отрезка
+	 	// 3 - прямая лежит на прлоскости
+		var plane_dot_line = VECTOR3D_Dot(PARMLINE3D_pline.v, PLANE3D_plane.n);
+
+		if (Math.abs(plane_dot_line) <= Constants.Epsilon_E5)
+		   {
+		   if (fabs(Compute_Point_In_Plane3D(&pline->p0, plane)) <= EPSILON_E5)
+		      return 0;
+		   else
+		      return 1;
+		   }
+
+		// поиск точки пересечения
+		// a*(x0+vx*t) + b*(y0+vy*t) + c*(z0+vz*t) + d =0
+		// t = -(a*x0 + b*y0 + c*z0 + d)/(a*vx + b*vy + c*vz)
+		// x0,y0,z0, vx,vy,vz, define the line
+		// d = (-a*xp0 - b*yp0 - c*zp0), xp0, yp0, zp0, define the point on the plane 
+
+		t = -(PLANE3D_plane.n.x*PARMLINE3D_pline.p0.x + 
+		       PLANE3D_plane.n.y*PARMLINE3D_pline.p0.y + 
+		       PLANE3D_plane.n.z*PARMLINE3D_pline.p0.z -
+		       PLANE3D_plane.n.x*PARMLINE3D_pline.p0.x - 
+		       PLANE3D_plane.n.y*PARMLINE3D_pline.p0.y - 
+		       PLANE3D_plane.n.z*PARMLINE3D_pline.p0.z) / plane_dot_line;
+		   
+		POINT3D_pt.x = PARMLINE3D_pline.p0.x + PARMLINE3D_pline.v.x*t;
+		POINT3D_pt.y = PARMLINE3D_pline.p0.y + PARMLINE3D_pline.v.y*t;
+		POINT3D_pt.z = PARMLINE3D_pline.p0.z + PARMLINE3D_pline.v.z*t;
+
+		// проверка вхождения t в интервал [0, 1]
+		if (*t>=0.0 && *t<=1.0)
+		   return 3;
+		else
+		   return 4;
+	 },
+
+	 ///////////////////////////////////Функции для работы с квантерионами///////////////////////////////////////////////////
+	 QUAT_Add: function(QUAT_q1, QUAT_q2, QUAT_qsum)
+	 {
+		// Складывает два кватерниона и возвращает через qsum
+		QUAT_qsum.x = QUAT_q1.x + QUAT_q2.x;
+		QUAT_qsum.y = QUAT_q1.y + QUAT_q2.y;
+		QUAT_qsum.z = QUAT_q1.z + QUAT_q2.z;
+		QUAT_qsum.w = QUAT_q1.w + QUAT_q2.w;
+	 },
+
+	  QUAT_Sub: function(QUAT_q1, QUAT_q2, QUAT_qdiff)
+	  {
+		// Вычитает два кватерниона и возвращает через qdiff
+		QUAT_qdiff.x = QUAT_q1.x - QUAT_q2.x;
+		QUAT_qdiff.y = QUAT_q1.y - QUAT_q2.y;
+		QUAT_qdiff.z = QUAT_q1.z - QUAT_q2.z;
+		QUAT_qdiff.w = QUAT_q1.w - QUAT_q2.w;
+	  },
+
+	  QUAT_Conjugate: function(QUAT_q, QUAT_qconj)
+	 {
+		// Находит кватернион сопряженный квантериону q и возвращает результат через qconj
+		QUAT_qconj.x = -QUAT_q.x;
+		QUAT_qconj.y = -QUAT_q.y;
+		QUAT_qconj.z = -QUAT_q.z;
+		QUAT_qconj.w =  QUAT_q.w;
+	 },
+
+	 QUAT_ScaleAndReturnQUAT: function(QUAT_q, scale, QUAT_qs)
+	 {
+		// Масштабирует кватернион на коэффициент scale и возвращает результат через qs
+		QUAT_qs.x = scale*QUAT_q.x;
+		QUAT_qs.y = scale*QUAT_q.y;
+		QUAT_qs.z = scale*QUAT_q.z;
+		QUAT_qs.w = scale*QUAT_q.w;
+
+	 },
+
+	 QUAT_Scale: function(QUAT_q, scale)
+	 {
+		// Масштабирует кватернион заданный в параметре на коэффициент scale
+		QUAT_q.x*=scale;
+		QUAT_q.y*=scale;
+		QUAT_q.z*=scale;
+		QUAT_q.w*=scale;
+	 },
+
+	 QUAT_Norm: function(QUAT_q)
+	 {
+		// Возвращает длину кватерниона
+		return(Math.sqrt(QUAT_q.w*QUAT_q.w + QUAT_q.x*QUAT_q.x + QUAT_q.y*QUAT_q.y + QUAT_q.z*QUAT_q.z));
+	 },
+
+	 QUAT_Norm2: function(QUAT_q)
+	 {
+		// Возвращает квадрат длины кватерниона
+		// Тоже, что и QUAT_Norm, только без квадратного корня
+		return(QUAT_qюw*QUAT_qюw + QUAT_qюx*QUAT_qюx + QUAT_qюy*QUAT_qюy + QUAT_qюz*QUAT_qюz);
+	 },
+
+	 QUAT_NormalizeAndreturnQUAT: function(QUAT_q, QUAT_qn)
+	 {
+		// Нормализует квантернион возвращая результат через qn
+
+		// 1 деленная на длину
+		var qlength_inv = 1.0/(Math.sqrt(QUAT_q.w*QUAT_q.w + QUAT_q.x*QUAT_q.x + QUAT_q.y*QUAT_q.y + QUAT_q.z*QUAT_q.z));
+
+		// Нормализация
+		QUAT_qn.w=QUAT_q.w*qlength_inv;
+		QUAT_qn.x=QUAT_q.x*qlength_inv;
+		QUAT_qn.y=QUAT_q.y*qlength_inv;
+		QUAT_qn.z=QUAT_q.z*qlength_inv;
+	 },
+
+	 QUAT_Normalize: function(QUAT_q)
+	 {
+		// Нормализует кватернион и возвращает рузультат через исходный
+
+		// 1 деленная на длину
+		var qlength_inv = 1.0/(Math.sqrt(QUAT_q.w*QUAT_q.w + QUAT_q.x*QUAT_q.x + QUAT_q.y*QUAT_q.y + QUAT_q.z*QUAT_q.z));
+
+		// нормализация
+		QUAT_q.w*=qlength_inv;
+		QUAT_q.x*=qlength_inv;
+		QUAT_q.y*=qlength_inv;
+		QUAT_q.z*=qlength_inv;
+	 },
+
+	 // [NormQUAT_Unit_InverseInverseAndReturnQUAT]
+	 QUAT_Unit_InverseAndReturnQUAT:function(QUAT_q, QUAT_qi)
+	 {
+		// Вычисляет кватернион обратный заданному через параметр и возвращает через qi
+		// Квантерион q должен быть единичным
+		QUAT_qi.w =  QUAT_q.w;
+		QUAT_qi.x = -QUAT_q.x;
+		QUAT_qi.y = -QUAT_q.y;
+		QUAT_qi.z = -QUAT_q.z;
+	 },
+
+	 QUAT_Unit_Inverse: function(QUAT_q)
+	 {
+		// Вычисляет кватернион обратный заданному через параметр и возвращает результат через исходный
+		// Квантерион q должен быть единичным
+		QUAT_q.x = -QUAT_q->x;
+		QUAT_q.y = -QUAT_q->y;
+		QUAT_q.z = -QUAT_q->z;
+	 },
+
+	 QUAT_Inverse: function(QUAT_q, QUAT_qi)
+	 {
+		// Вычисляет кватернион обратный заданному и возвращает результат через qi
+
+
+		var norm_inv = 1.0/(QUAT_q.w*QUAT_q.w + QUAT_q.x*QUAT_q.x + QUAT_q.y*QUAT_q.y + QUAT_q.z*QUAT_q.z);
+
+		QUAT_qi.w =  QUAT_q.w*norm_inv;
+		QUAT_qi.x = -QUAT_q.x*norm_inv;
+		QUAT_qi.y = -QUAT_q.y*norm_inv;
+		QUAT_qi.z = -QUAT_q.z*norm_inv;
+	 },
+
+	 QUAT_Mul: function(QUAT_q1, QUAT_q2, QUAT_qprod)
+	 {
+		// Перемножает два квантерниона и возвращает результат через qprod
+
+
+		// Для уменьшения количества умножений используетмя выделение множителей
+		var prd_0 = (QUAT_q1.z - QUAT_q1.y) * (QUAT_q2.y - QUAT_q2.z);
+		var prd_1 = (QUAT_q1.w + QUAT_q1.x) * (QUAT_q2.w + QUAT_q2.x);
+		var prd_2 = (QUAT_q1.w - QUAT_q1.x) * (QUAT_q2.y + QUAT_q2.z);
+		var prd_3 = (QUAT_q1.y + QUAT_q1.z) * (QUAT_q2.w - QUAT_q2.x);
+		var prd_4 = (QUAT_q1.z - QUAT_q1.x) * (QUAT_q2.x - QUAT_q2.y);
+		var prd_5 = (QUAT_q1.z + QUAT_q1.x) * (QUAT_q2.x + QUAT_q2.y);
+		var prd_6 = (QUAT_q1.w + QUAT_q1.y) * (QUAT_q2.w - QUAT_q2.z);
+		var prd_7 = (QUAT_q1.w - QUAT_q1.y) * (QUAT_q2.w + QUAT_q2.z);
+
+		var prd_8 = prd_5 + prd_6 + prd_7;
+		var prd_9 = 0.5 * (prd_4 + prd_8);
+
+		// Сборка резцльтата из временных переменных
+		QUAT_qprod.w = prd_0 + prd_9 - prd_5;
+		QUAT_qprod.x = prd_1 + prd_9 - prd_8;
+		QUAT_qprod.y = prd_2 + prd_9 - prd_7;
+		QUAT_qprod.z = prd_3 + prd_9 - prd_6;
+	 },
+
+	 QUAT_Triple_Product: function(QUAT_q1, QUAT_q2, QUAT_q3, QUAT_qprod)
+	 {
+		// Перемножает три квантерниона и возвращает результат через qprod
+
+		var qtmp = new QUAT();
+		QUAT_Mul(QUAT_q1,QUAT_q2,qtmp);
+		QUAT_Mul(qtmp, QUAT_q3, QUAT_qprod);
+	 },
+
+	 // [Need to test]
+	 VECTOR3D_Theta_To_QUAT: function(QUAT_q, VECTOR3D_v, theta)
+	 {
+		// Инициализирует кватернион при помощи трехмерного вектора направления и угла
+		// Вектор направления должен быть единичной длины, а угол выражением - в радианах
+
+		var theta_div = (0.5)*theta; // находим theta/2
+
+		// вычисляем кватернион
+		var sin_theta = Math.sin(theta_div);
+
+		QUAT_q.x = sin_theta * VECTOR3D_v.x;
+		QUAT_q.y = sin_theta * VECTOR3D_v.y;
+		QUAT_q.z = sin_theta * VECTOR3D_v.z;
+		QUAT_q.w = Math.cos( theta_div );
+	 },
+
+	 // [Need to test]
+	 VECTOR4D_Theta_To_QUAT: function(QUAT_q, VECTOR4D_v, theta)
+	 {
+		// Инициализирует кватернион при помощи 4-х мерного вектора и угла
+		// Вектор направления должен быть единичным, а угол в радианах
+
+		var theta_div = (0.5)*theta;
+
+		var sin_theta = Math.sin(theta_div);
+
+		q->x = sin_theta * VECTOR4D_v.x;
+		q->y = sin_theta * VECTOR4D_v.y;
+		q->z = sin_theta * VECTOR4D_v.z;
+		q->w = Math.cos( theta_div_2 );
+	 },
+
+	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	 
 	 VECTOR3D_Print: function(va, name, outputTag)
 	{
