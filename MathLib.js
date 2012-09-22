@@ -1317,7 +1317,6 @@ MathLib = {
 	 {
 		// Перемножает два квантерниона и возвращает результат через qprod
 
-
 		// Для уменьшения количества умножений используетмя выделение множителей
 		var prd_0 = (QUAT_q1.z - QUAT_q1.y) * (QUAT_q2.y - QUAT_q2.z);
 		var prd_1 = (QUAT_q1.w + QUAT_q1.x) * (QUAT_q2.w + QUAT_q2.x);
@@ -1374,10 +1373,136 @@ MathLib = {
 
 		var sin_theta = Math.sin(theta_div);
 
-		q->x = sin_theta * VECTOR4D_v.x;
-		q->y = sin_theta * VECTOR4D_v.y;
-		q->z = sin_theta * VECTOR4D_v.z;
-		q->w = Math.cos( theta_div_2 );
+		QUAT_q.x = sin_theta * VECTOR4D_v.x;
+		QUAT_q.y = sin_theta * VECTOR4D_v.y;
+		QUAT_q.z = sin_theta * VECTOR4D_v.z;
+		QUAT_q.w = Math.cos(theta_div);
+	 },
+
+	EulerZYX_To_QUAT: function(QUAT_q, theta_z, theta_y, theta_x)
+	{
+		// Инициализирует кватернион основываясь на порядке zyx умножения углов поворотов, 
+		// параллельных осям xyz соответственно.
+		// Результат возвращает через исходный кватернион q заданный параметром
+
+		var cos_z = 0.5*Math(theta_z);
+		var cos_y = 0.5*Math(theta_y);
+		var cos_x = 0.5*Math(theta_x);
+
+		var sin_z = 0.5*Math(theta_z);
+		var sin_y = 0.5*Math(theta_y);
+		var sin_x = 0.5*Math(theta_x);
+
+		// and now compute quaternion
+		QUAT_q.w = cos_z*cos_y*cos_x + sin_z*sin_y*sin_x;
+		QUAT_q.x = cos_z*cos_y*sin_x - sin_z*sin_y*cos_x;
+		QUAT_q.y = cos_z*sin_y*cos_x + sin_z*cos_y*sin_x;
+		QUAT_q.z = sin_z*cos_y*cos_x - cos_z*sin_y*sin_x;
+	 },
+
+	 QUAT_To_VECTOR3D_Theta: function(QUAT_q, VECTOR3D_v, theta)
+	 {
+		// Преобразует единичный кватернион в единичный вектор направления
+		// и угол поворота вокруг него
+
+		// получаем угол поворота
+		theta = Math.acos(QUAT_q.w);
+
+		var sin_theta_inv = 1.0/Math.sin(theta);
+
+		// вычисляем вектор
+		VECTOR3D_v.x = QUAT_q.x*sin_theta_inv;
+		VECTOR3D_v.y = QUAT_q.y*sin_theta_inv;
+		VECTOR3D_v.z = QUAT_q.z*sin_theta_inv;
+
+		// удваиваем
+		theta*=2;
+	 },
+
+	 /////////////////////////////////////Функции для работы с системами координат///////////////////////////////////////////
+
+	 POLAR2D_To_POINT2D: function(POLAR2D_polar, POINT2D_rect)
+	 {
+		// Преобразование полярных координат в декартовы и возвращает через rect
+
+		POINT2D_rect.x = POLAR2D_polar.r * Math.cos(POLAR2D_polar.theta);
+		POINT2D_rect.y = POLAR2D_polar.r * Math.sin(POLAR2D_polar.theta);
+	 },
+
+	 POLAR2D_To_RectXY: function(POLAR2D_polar, x, y)
+	 {
+		// Преобразует полярные координаты в явные значения декартовых и возвращает их через x и y
+
+		x = POLAR2D_polar.r*Math.cos(POLAR2D_polar.theta);
+		y = POLAR2D_polar.r*Math.sin(POLAR2D_polar.theta);
+	 },
+
+	 POINT2D_To_POLAR2D: function(POINT2D_rect, POLAR2D_polar)
+	 {
+		// Преобразует полярные координаты в явные значения декартовых и возварщает через polar
+
+		POLAR2D_polar.r = Math.sqrt((POINT2D_rect.x * POINT2D_rect.x) + (POINT2D_rect.y * POINT2D_rect.y));
+		POLAR2D_polar.theta = atanf(POINT2D_rect.y / POINT2D_rect.x);
+	 },
+
+	 // [Use Math.atan2(POINT2D_rect.y, POINT2D_rect.x)]
+	 POINT2D_To_PolarRTh: function(POINT2D_rect, r, theta)
+	 {
+		// Преобразует декартовы координаты в полярные и возвращает в виде радиуса r и угла theta
+
+		r = Math.sqrt((POINT2D_rect.x * POINT2D_rect.x) + (POINT2D_rect.y * POINT2D_rect.y));
+		theta = Math.atan(POINT2D_rect.y / POINT2D_rect.x);
+	 },
+
+	 CYLINDRICAL3D_To_POINT3D: function(CYLINDRICAL3D_cyl, POINT3D_rect)
+	 {
+		// Преобразует цилиндрические координаты в декартовы
+
+		POINT3D_rect.x = CYLINDRICAL3D_cyl.r * Math.cos(CYLINDRICAL3D_cyl.theta);
+		POINT3D_rect.y = CYLINDRICAL3D_cyl.r * Math.sin(CYLINDRICAL3D_cyl.theta);
+		POINT3D_rect.z = CYLINDRICAL3D_cyl.z;
+	 },
+
+	 CYLINDRICAL3D_To_RectXYZ: function(CYLINDRICAL3D_cyl, x, y, z)
+	 {
+		// Преобразует цилиндрические координаты в явные значения декартовых возвращая их через x, y, z
+
+		x = CYLINDRICAL3D_cyl.r * Math.cos(CYLINDRICAL3D_cyl.theta);
+		y = CYLINDRICAL3D_cyl.r * Math.sin(CYLINDRICAL3D_cyl.theta);
+		z = CYLINDRICAL3D_cyl.z;
+	 },
+
+	 // [Use Math.atan2(POINT3D_rect.y, POINT3D_rect.x)]
+	 POINT3D_To_CYLINDRICAL3D: function(POINT3D_rect, CYLINDRICAL3D_cyl)
+	 {
+		// Преобразует из декартовой системы координат в цилиндрическую и возвращает через cyl
+
+		CYLINDRICAL3D_cyl.r = Math.sqrt((POINT3D_rect.x * POINT3D_rect.x) + (POINT3D_rect.y * POINT3D_rect.y));
+		CYLINDRICAL3D_cyl.theta = Math.atan(POINT3D_rect.y / POINT3D_rect.x);
+		CYLINDRICAL3D_cyl.z = POINT3D_rect.z;
+
+	 },
+
+	 // [Use Math.atan2(POINT3D_rect.y, POINT3D_rect.x)]
+	 POINT3D_To_CylindricalRThZ: function(POINT3D_rect, r, theta, z)
+	 {
+		// Преобразует из декартовой системы координат в цилиндрическую и возвращает явные значения через r, theta и z
+
+		r = Math.sqrt((POINT3D_rect.x * POINT3D_rect.x) + (POINT3D_rect.y * POINT3D_rect.y));
+		theta = Math.atan(POINT3D_rect.y / POINT3D_rect.x);
+		z = POINT3D_rect.z;
+	 },
+
+	 SPHERICAL3D_To_POINT3D: function(SPHERICAL3D_sph, POINT3D_rect)
+	 {
+		// Преобразует сферическую систему координат в декартову и возвращает результат через rect
+		
+		var r = SPHERICAL3D_sph.p*Math.sin(SPHERICAL3D_sph.phi);
+		POINT3D_rect.z = SPHERICAL3D_sph.p*Math.cos(SPHERICAL3D_sph.phi);
+
+		// use r to simplify computation of x,y
+		POINT3D_rect.x = r * Math.cos(SPHERICAL3D_sph.theta);
+		POINT3D_rect.y = r * Math.sin(SPHERICAL3D_sph.theta);
 	 },
 
 	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
