@@ -1496,13 +1496,39 @@ MathLib = {
 	 SPHERICAL3D_To_POINT3D: function(SPHERICAL3D_sph, POINT3D_rect)
 	 {
 		// Преобразует сферическую систему координат в декартову и возвращает результат через rect
-		
+
 		var r = SPHERICAL3D_sph.p*Math.sin(SPHERICAL3D_sph.phi);
 		POINT3D_rect.z = SPHERICAL3D_sph.p*Math.cos(SPHERICAL3D_sph.phi);
 
 		// use r to simplify computation of x,y
 		POINT3D_rect.x = r * Math.cos(SPHERICAL3D_sph.theta);
 		POINT3D_rect.y = r * Math.sin(SPHERICAL3D_sph.theta);
+	 },
+
+	 SPHERICAL3D_To_RectXYZ: function(SPHERICAL3D_sph, x, y, z)
+	 {
+		// Преобразует из сферической системы координат в явные занчения декартовых и возвращает их через x, y, z
+
+		// Радиус
+		var r;
+
+		r  = SPHERICAL3D_sph.p*Math.sin(SPHERICAL3D_sph.phi);
+		z = SPHERICAL3D_sph.p*math.cos(SPHERICAL3D_sph.phi);
+
+		x = r*Math.cos(SPHERICAL3D_sph.theta);
+		y = r*Math.sin(SPHERICAL3D_sph.theta);
+	 },
+
+	 [Use Math.atan2(POINT3D_rect.y, POINT3D_rect.x)]
+	 POINT3D_To_SphericalPThPh: function(POINT3D_rect, p, theta, phi)
+	 {
+		// Преобразует декартову систему в явные занчения сферической системы и возваращает их через p, theta и phi
+		
+		p = Math.sqrt((POINT3D_rect.x*POINT3D_rect.x)+(POINT3D_rect.y*POINT3D_rect.y)+(POINT3D_rect.z*POINT3D_rect.z));
+		theta = Math.atan(POINT3D_rect.y / POINT3D_rect.x);
+
+		var r = Math.sqrt((POINT3D_rect.x * POINT3D_rect.x) + (POINT3D_rect.y * POINT3D_rect.y));
+		phi = Math.asin(r / p);
 	 },
 
 	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
