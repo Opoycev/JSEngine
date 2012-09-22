@@ -1423,7 +1423,7 @@ MathLib = {
 
 	 POLAR2D_To_POINT2D: function(POLAR2D_polar, POINT2D_rect)
 	 {
-		// Преобразование полярных координат в декартовы и возвращает через rect
+		// Преобразует полярные координаты в декартовы и возвращает через rect
 
 		POINT2D_rect.x = POLAR2D_polar.r * Math.cos(POLAR2D_polar.theta);
 		POINT2D_rect.y = POLAR2D_polar.r * Math.sin(POLAR2D_polar.theta);
@@ -1523,7 +1523,7 @@ MathLib = {
 	 POINT3D_To_SphericalPThPh: function(POINT3D_rect, p, theta, phi)
 	 {
 		// Преобразует декартову систему в явные занчения сферической системы и возваращает их через p, theta и phi
-		
+
 		p = Math.sqrt((POINT3D_rect.x*POINT3D_rect.x)+(POINT3D_rect.y*POINT3D_rect.y)+(POINT3D_rect.z*POINT3D_rect.z));
 		theta = Math.atan(POINT3D_rect.y / POINT3D_rect.x);
 
