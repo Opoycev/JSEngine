@@ -20,17 +20,108 @@
             lineStop.x = 3;
             lineStop.y = 3;
     		var point = new Point2D();
-            point.x = 1;
-            point.y = 1;
+            point.x = 2;
+            point.y = 3;
 
-            var distance = MathLib.DistancePoint2DToVector2D(lineStart, lineStop, point); // 0
+            var distance = MathLib.DistancePoint2DToVector2D(lineStart, lineStop, point); // 0.707
     		
-    		return (1);
+    		return (distance);
 			
 	    }
 
+        var testDistancePoint3DTovector3D = function(){
+            var lineStart = new Vector3D();
+            lineStart.x = 1;
+            lineStart.y = 1;
+            lineStart.z = 0;
+            var lineStop = new Vector3D();
+            lineStop.x = 3;
+            lineStop.y = 3;
+            lineStop.z = 0;
+            var point = new Point3D();
+            point.x = 2;
+            point.y = 3;
+            point.z = 0;
+
+            var distance = MathLib.DistancePoint3DTovector3D(lineStart, lineStop, point); // 0.707
+
+            return(distance);
+        }
+
+        var testDistancePoint3DTovector3DBinTesting = function(){
+            var lineStart = new Vector3D();
+            lineStart.x = 1;
+            lineStart.y = 1;
+            lineStart.z = 0;
+            var lineStop = new Vector3D();
+            lineStop.x = 3;
+            lineStop.y = 3;
+            lineStop.z = 0;
+            var point = new Point3D();
+            point.x = 2;
+            point.y = 3;
+            point.z = 0;
+
+            var distance = MathLib.DistancePoint3DTovector3DBinTesting(lineStart, lineStop, point); // 0.707
+
+            return(distance);
+        }
+
+        function dist_p_s(ox, oy, oz, ax, ay, az, bx, by, bz)
+        {
+
+            function dist_p_p(ax, ay, az, bx, by, bz){
+                return Math.pow((ax-bx), 2)+Math.pow((ay-by), 2)+Math.pow((az-bz), 2);
+            }
+
+            var l, r, c, cx, cy, cz;
+            l=0.0; r=1.0;
+            
+            do{
+                c=(l+r)/2.0;
+                cx=ax+(bx-ax)*c;
+                cy=ay+(by-ay)*c;
+                cz=az+(bz-az)*c;
+                
+                if( (ox-cx)*(bx-cx)+(oy-cy)*(by-cy)+(oz-cz)*(bz-cz)>0 ) l=c;
+                else r=c;
+            }while( r-l>0.0001);
+            
+            var distance =  Math.sqrt(dist_p_p(ox,oy,oz,cx,cy,cz));
+
+            return distance;
+        }
+
+        function dist_p_s2(ox, oy, oz, ax, ay, az, bx, by, bz)
+        {
+            function dist_p_p(ax, ay, az, bx, by, bz){
+                return Math.pow((ax-bx), 2)+Math.pow((ay-by), 2)+Math.pow((az-bz), 2);
+            }
+
+            var a1, a2, a3, b1, b2, b3, a, b, c;
+            
+            a = dist_p_p(ox,oy,oz,ax,ay,az);
+            b = dist_p_p(ox,oy,oz,bx,by,bz);
+            c = dist_p_p(ax,ay,az,bx,by,bz);
+
+            
+            if(a>=b+c) return Math.sqrt(b);
+            if(b>=a+c) return Math.sqrt(a);
+            
+            a1=ax-ox; a2=ay-oy; a3=az-oz;
+            b1=bx-ox; b2=by-oy; b3=bz-oz;
+            
+            return Math.sqrt(dist_p_p(a2*b3-a3*b2,-(a1*b3-a3*b1),a1*b2-b1*a2,0,0,0)/c);
+     }
+
         var test = function(){
             // var result = testDistancePoint2DToVector2D();
+            var res1 = testDistancePoint2DToVector2D();
+            var res2 = testDistancePoint3DTovector3D();
+            var res3 = testDistancePoint3DTovector3DBinTesting();
+
+            debugger;
+            var tmp = 0;
         }
 				
 				
