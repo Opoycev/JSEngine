@@ -1424,8 +1424,7 @@ MathLib = {
 	 // [Tested]
 	 DistancePoint2DToVector2D: function(Vector2D_lineStart, Vector2D_lineStop, Point2D_dot)
 	 {
-		// s:=abs(ax*(by-py)+bx*(py-ay)+px*(ay-by))/2;
-		// d:=2*s/sqrt(sqr(ax-bx)+sqr(ay-by));
+		// Вычисляет расстояние от двухмерной прямой до двухмерной плоскости
 
 		var diff_linestop_dot = Vector2D_lineStop.y - Point2D_dot.y;
 		var diff_linestop_linestart = Point2D_dot.y - Vector2D_lineStart.y;
@@ -1436,6 +1435,53 @@ MathLib = {
 
         return distance;
 	 },
+
+	 // [Tested]
+	 DistancePoint3DTovector3D: function(Vector3D_lineStart, Vector3D_lineStop, Point3D_dot)
+	 {
+	 	// Вычисляет расстояние от трехмерной точки до трехмерной прямой через векторное произведение
+
+		// var a = Math.pow((Point3D_dot.x - Vector3D_lineStart.x), 2) + Math.pow((Point3D_dot.x - Vector3D_lineStart.x), 2) + Math.pow((Point3D_dot.x - Vector3D_lineStart.x), 2);
+		// var b = Math.pow((Point3D_dot.y - Vector3D_lineStop.y), 2) + Math.pow((Point3D_dot.y - Vector3D_lineStop.y), 2) + Math.pow((Point3D_dot.y - Vector3D_lineStop.y), 2);
+		var c = Math.pow((Vector3D_lineStart.x - Vector3D_lineStop.x), 2) + Math.pow((Vector3D_lineStart.y - Vector3D_lineStop.y), 2) + Math.pow((Vector3D_lineStart.z - Vector3D_lineStop.z), 2);
+
+		// if (a>=b+c) return Math.sqrt(b);
+		// if (b>=a+c) return Math.sqrt(a);
+
+		var a1 = Vector3D_lineStart.x - Point3D_dot.x; var a2 = Vector3D_lineStart.y - Point3D_dot.y; var a3 = Vector3D_lineStart.z - Point3D_dot.z;
+		var b1 = Vector3D_lineStop.x - Point3D_dot.x; var b2 = Vector3D_lineStop.y - Point3D_dot.y; var b3 = Vector3D_lineStop.z - Point3D_dot.z;
+
+		var distance = Math.sqrt((Math.pow((a2*b3-a3*b2), 2) + Math.pow(-(a1*b3-a3*b1), 2) + Math.pow((a1*b2-b1*a2), 2)) / c);
+
+		return distance;
+	 },
+
+	 // [Tested]
+	 DistancePoint3DTovector3DBinTesting: function(Vector3D_lineStart, Vector3D_lineStop, Point3D_dot)
+        {
+        	// Расстояние от техмерной точки до терхмерной прямой методом бинарного поиска
+
+            function len(ax, ay, az, bx, by, bz){
+                return Math.pow((ax-bx), 2)+Math.pow((ay-by), 2)+Math.pow((az-bz), 2);
+            }
+
+            var l, r, c, cx, cy, cz;
+            l=0.0; r=1.0;
+            
+            do{
+                c=(l+r)/2.0;
+                cx=Vector3D_lineStart.x+(Vector3D_lineStop.x-Vector3D_lineStart.x)*c;
+                cy=Vector3D_lineStart.y+(Vector3D_lineStop.y-Vector3D_lineStart.y)*c;
+                cz=Vector3D_lineStart.z+(Vector3D_lineStop.z-Vector3D_lineStart.z)*c;
+                
+                if( (Point3D_dot.x-cx)*(Vector3D_lineStop.x-cx)+(Point3D_dot.y-cy)*(Vector3D_lineStop.y-cy)+(Point3D_dot.z-cz)*(Vector3D_lineStop.z-cz)>0 ) l=c;
+                else r=c;
+            }while( r-l>0.0001);
+            
+            var distance = Math.sqrt(len(Point3D_dot.x,Point3D_dot.y,Point3D_dot.z,cx,cy,cz));
+
+            return distance;
+        },
 
 	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	 
