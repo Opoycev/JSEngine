@@ -30,6 +30,8 @@ MathLib = {
 		
 		return (dist >> 10);
 	},
+
+	/////////////////////////////////////Функции для работы с системами координат///////////////////////////////////////////
 	
 	Polar2DToPoint2D: function(polar, rect)
 	{
@@ -719,7 +721,7 @@ MathLib = {
 		// сначала находим определитель
 		var det = MATRIX3X3_m.M[0][0]*(MATRIX3X3_m.M[1][1]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][1]*MATRIX3X3_m.M[1][2]) - 
             	MATRIX3X3_m.M[0][1]*(MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][0]*MATRIX3X3_m.M[1][2]) + 
-            	MATRIX3X3_m.M[0][2]*(MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[2][1] - MATRIX3X3_m.M[2][0]MATRIX3X3_m.M[1][1]);
+            	MATRIX3X3_m.M[0][2]*(MATRIX3X3_m.M[1][0]*MATRIX3X3_m.M[2][1] - MATRIX3X3_m.M[2][0]*MATRIX3X3_m.M[1][1]);
 
 		if (Math.abs(det) < Constants.Epsilon_E5)
    			return(0);
@@ -757,7 +759,7 @@ MathLib = {
 		// Если решение существует, оно сохраняется в матрице Х.
 
 		// Шаг 1: вычиляем определитель
-		float det_A = Mat_Det_3X3(A);
+		var det_A = Mat_Det_3X3(A);
 
 		// проверка определителя на 0 (елси это так, то решения не существует)
 		if (fabs(det_A) < EPSILON_E5)
@@ -835,7 +837,7 @@ MathLib = {
 		        // вычисляем скалярное произведение строки ma 
 		        // и столбца mb
 		        var sum = 0;
-		        for (int index = 0; index < 4; index++)
+		        for (var index = 0; index < 4; index++)
 			     {
 			          sum += (MATRIX4X4_ma.M[row][index] * MATRIX4X4_mb.M[index][col]);
 			     }
@@ -1064,7 +1066,7 @@ MathLib = {
 
 	 Intersect_Parm_Lines2D: function(PARMLINE2D_p1, PARMLINE2D_p2, t1, t2)
 	 {
-		// Вычисляет точку пересечение отрезков двух прямых и возвращает true, если прямые пересекаются
+		// Вычисляет точку пересечение отрезков двух праметрических прямых и возвращает true, если прямые пересекаются
 		// При этом занчения t1 м t2 соответствуют точке пересечения. Параметры могут выходить за пределы 
 		// диапазона [0, 1], что несмотря на пересечение прямых, отрезки не пересекаются.
 		// 0 - Пересечений нет
@@ -1096,7 +1098,7 @@ MathLib = {
 	 {
 
 		var t1, t2;
-		var det_p1p2 = PARMLINE2D_p1.v.x*PARMLINE2D_p2.v.y - PARMLINE2D_p1.v.y*PARMLINE2D_p2.v.x);
+		var det_p1p2 = PARMLINE2D_p1.v.x*PARMLINE2D_p2.v.y - PARMLINE2D_p1.v.y*PARMLINE2D_p2.v.x;
 
 		if (Math.abs(det_p1p2) <= Constants.Epsilon_E5)
 		   {
@@ -1150,7 +1152,7 @@ MathLib = {
 
 	 },
 
-	 // Need to test
+	 // [Need to test]
 	 Intersect_Parm_Line3D_Plane3D: function(PARMLINE3D_pline, PLANE3D_plane, t, POINT3D_pt)
 	 {
 	 	// Определяет где параметрическая прямая пересекает полоскость.
@@ -1162,7 +1164,7 @@ MathLib = {
 
 		if (Math.abs(plane_dot_line) <= Constants.Epsilon_E5)
 		   {
-		   if (fabs(Compute_Point_In_Plane3D(&pline->p0, plane)) <= EPSILON_E5)
+		   if (fabs(Compute_Point_In_Plane3D(PARMLINE3D_pline.p0, plane)) <= EPSILON_E5)
 		      return 0;
 		   else
 		      return 1;
@@ -1186,7 +1188,7 @@ MathLib = {
 		POINT3D_pt.z = PARMLINE3D_pline.p0.z + PARMLINE3D_pline.v.z*t;
 
 		// проверка вхождения t в интервал [0, 1]
-		if (*t>=0.0 && *t<=1.0)
+		if (t>=0 && t<=1)
 		   return 3;
 		else
 		   return 4;
@@ -1295,9 +1297,9 @@ MathLib = {
 	 {
 		// Вычисляет кватернион обратный заданному через параметр и возвращает результат через исходный
 		// Квантерион q должен быть единичным
-		QUAT_q.x = -QUAT_q->x;
-		QUAT_q.y = -QUAT_q->y;
-		QUAT_q.z = -QUAT_q->z;
+		QUAT_q.x = -QUAT_q.x;
+		QUAT_q.y = -QUAT_q.y;
+		QUAT_q.z = -QUAT_q.z;
 	 },
 
 	 QUAT_Inverse: function(QUAT_q, QUAT_qi)
@@ -1419,116 +1421,20 @@ MathLib = {
 		theta*=2;
 	 },
 
-	 /////////////////////////////////////Функции для работы с системами координат///////////////////////////////////////////
-
-	 POLAR2D_To_POINT2D: function(POLAR2D_polar, POINT2D_rect)
+	 // [Tested]
+	 DistancePoint2DToVector2D: function(Vector2D_lineStart, Vector2D_lineStop, Point2D_dot)
 	 {
-		// Преобразует полярные координаты в декартовы и возвращает через rect
+		// s:=abs(ax*(by-py)+bx*(py-ay)+px*(ay-by))/2;
+		// d:=2*s/sqrt(sqr(ax-bx)+sqr(ay-by));
 
-		POINT2D_rect.x = POLAR2D_polar.r * Math.cos(POLAR2D_polar.theta);
-		POINT2D_rect.y = POLAR2D_polar.r * Math.sin(POLAR2D_polar.theta);
-	 },
+		var diff_linestop_dot = Vector2D_lineStop.y - Point2D_dot.y;
+		var diff_linestop_linestart = Point2D_dot.y - Vector2D_lineStart.y;
+		var diff_linestart_linestop = Vector2D_lineStart.y-Vector2D_lineStop.y;
 
-	 POLAR2D_To_RectXY: function(POLAR2D_polar, x, y)
-	 {
-		// Преобразует полярные координаты в явные значения декартовых и возвращает их через x и y
+		var sqr_sum = Math.abs(Vector2D_lineStart.x*(diff_linestop_dot) + Vector2D_lineStop.x*(diff_linestop_linestart) + Point2D_dot.x*(diff_linestart_linestop))/2;
+        var distance = 2*sqr_sum / Math.sqrt(Math.pow((Vector2D_lineStart.x-Vector2D_lineStop.x), 2) + Math.pow((Vector2D_lineStart.y-Vector2D_lineStop.y), 2));
 
-		x = POLAR2D_polar.r*Math.cos(POLAR2D_polar.theta);
-		y = POLAR2D_polar.r*Math.sin(POLAR2D_polar.theta);
-	 },
-
-	 POINT2D_To_POLAR2D: function(POINT2D_rect, POLAR2D_polar)
-	 {
-		// Преобразует полярные координаты в явные значения декартовых и возварщает через polar
-
-		POLAR2D_polar.r = Math.sqrt((POINT2D_rect.x * POINT2D_rect.x) + (POINT2D_rect.y * POINT2D_rect.y));
-		POLAR2D_polar.theta = atanf(POINT2D_rect.y / POINT2D_rect.x);
-	 },
-
-	 // [Use Math.atan2(POINT2D_rect.y, POINT2D_rect.x)]
-	 POINT2D_To_PolarRTh: function(POINT2D_rect, r, theta)
-	 {
-		// Преобразует декартовы координаты в полярные и возвращает в виде радиуса r и угла theta
-
-		r = Math.sqrt((POINT2D_rect.x * POINT2D_rect.x) + (POINT2D_rect.y * POINT2D_rect.y));
-		theta = Math.atan(POINT2D_rect.y / POINT2D_rect.x);
-	 },
-
-	 CYLINDRICAL3D_To_POINT3D: function(CYLINDRICAL3D_cyl, POINT3D_rect)
-	 {
-		// Преобразует цилиндрические координаты в декартовы
-
-		POINT3D_rect.x = CYLINDRICAL3D_cyl.r * Math.cos(CYLINDRICAL3D_cyl.theta);
-		POINT3D_rect.y = CYLINDRICAL3D_cyl.r * Math.sin(CYLINDRICAL3D_cyl.theta);
-		POINT3D_rect.z = CYLINDRICAL3D_cyl.z;
-	 },
-
-	 CYLINDRICAL3D_To_RectXYZ: function(CYLINDRICAL3D_cyl, x, y, z)
-	 {
-		// Преобразует цилиндрические координаты в явные значения декартовых возвращая их через x, y, z
-
-		x = CYLINDRICAL3D_cyl.r * Math.cos(CYLINDRICAL3D_cyl.theta);
-		y = CYLINDRICAL3D_cyl.r * Math.sin(CYLINDRICAL3D_cyl.theta);
-		z = CYLINDRICAL3D_cyl.z;
-	 },
-
-	 // [Use Math.atan2(POINT3D_rect.y, POINT3D_rect.x)]
-	 POINT3D_To_CYLINDRICAL3D: function(POINT3D_rect, CYLINDRICAL3D_cyl)
-	 {
-		// Преобразует из декартовой системы координат в цилиндрическую и возвращает через cyl
-
-		CYLINDRICAL3D_cyl.r = Math.sqrt((POINT3D_rect.x * POINT3D_rect.x) + (POINT3D_rect.y * POINT3D_rect.y));
-		CYLINDRICAL3D_cyl.theta = Math.atan(POINT3D_rect.y / POINT3D_rect.x);
-		CYLINDRICAL3D_cyl.z = POINT3D_rect.z;
-
-	 },
-
-	 // [Use Math.atan2(POINT3D_rect.y, POINT3D_rect.x)]
-	 POINT3D_To_CylindricalRThZ: function(POINT3D_rect, r, theta, z)
-	 {
-		// Преобразует из декартовой системы координат в цилиндрическую и возвращает явные значения через r, theta и z
-
-		r = Math.sqrt((POINT3D_rect.x * POINT3D_rect.x) + (POINT3D_rect.y * POINT3D_rect.y));
-		theta = Math.atan(POINT3D_rect.y / POINT3D_rect.x);
-		z = POINT3D_rect.z;
-	 },
-
-	 SPHERICAL3D_To_POINT3D: function(SPHERICAL3D_sph, POINT3D_rect)
-	 {
-		// Преобразует сферическую систему координат в декартову и возвращает результат через rect
-
-		var r = SPHERICAL3D_sph.p*Math.sin(SPHERICAL3D_sph.phi);
-		POINT3D_rect.z = SPHERICAL3D_sph.p*Math.cos(SPHERICAL3D_sph.phi);
-
-		// use r to simplify computation of x,y
-		POINT3D_rect.x = r * Math.cos(SPHERICAL3D_sph.theta);
-		POINT3D_rect.y = r * Math.sin(SPHERICAL3D_sph.theta);
-	 },
-
-	 SPHERICAL3D_To_RectXYZ: function(SPHERICAL3D_sph, x, y, z)
-	 {
-		// Преобразует из сферической системы координат в явные занчения декартовых и возвращает их через x, y, z
-
-		// Радиус
-		var r;
-
-		r  = SPHERICAL3D_sph.p*Math.sin(SPHERICAL3D_sph.phi);
-		z = SPHERICAL3D_sph.p*math.cos(SPHERICAL3D_sph.phi);
-
-		x = r*Math.cos(SPHERICAL3D_sph.theta);
-		y = r*Math.sin(SPHERICAL3D_sph.theta);
-	 },
-
-	 // [Use Math.atan2(POINT3D_rect.y, POINT3D_rect.x)]
-	 POINT3D_To_SphericalPThPh: function(POINT3D_rect, p, theta, phi)
-	 {
-		// Преобразует декартову систему в явные занчения сферической системы и возваращает их через p, theta и phi
-
-		p = Math.sqrt((POINT3D_rect.x*POINT3D_rect.x)+(POINT3D_rect.y*POINT3D_rect.y)+(POINT3D_rect.z*POINT3D_rect.z));
-		theta = Math.atan(POINT3D_rect.y / POINT3D_rect.x);
-
-		var r = Math.sqrt((POINT3D_rect.x * POINT3D_rect.x) + (POINT3D_rect.y * POINT3D_rect.y));
-		phi = Math.asin(r / p);
+        return distance;
 	 },
 
 	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

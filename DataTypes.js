@@ -3,19 +3,25 @@
 ///////////////////////////////////////////Точки////////////////////////////////////////
 
 //Двумерная точка
-var Point2D = new Object();
-Point2D = {x:0.0, y:0.0}
+// var Point2D = new Object();
+// Point2D = {x:0.0, y:0.0}
 function Point2D(x, y)
 {
 	this.x = x;
 	this.y = y;
 }
 
-function Vector2D(x, y)
+function Vector2D(point2D_x, point2D_y)
 {
-	this.x = x;
-	this.y = y;
+	this.x = point2D_x;
+	this.y = point2D_y;
 }
+
+// function Vector2D(point2D_x, Point2D_y)
+// {
+// 	this.start = point2D_x;
+// 	this.end = point2D_y;
+// }
 
 //Трехмерная точка
 var Point3D = new Object();
@@ -160,7 +166,7 @@ function Matrix1x2(){
 function QUAT(){
 	this.M = [0.0, 0.0, 0.0, 0.0]; // Векторная часть xi + yj + zk
 	this.q0 = 0.0; // Действительная часть
-},
+}
 
 ///////////////////////////////////////Угловые системы координат//////////////////////////////
 

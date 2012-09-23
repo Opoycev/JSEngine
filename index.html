@@ -10,22 +10,28 @@
         <script type="text/javascript" src="Constants.js"></script>
         
         <script type="text/javascript">
-        var test = function()
-	{
+        var testDistancePoint2DToVector2D = function()
+	    {
 
-		var a = new Matrix2x2();
-		a.M = [[506, 66], [66, 11]];
-		var b = new Matrix1x2();
-		b.M = [2315.1, 392.3];
-		
-		var result = new Matrix1x2();
-		
-		MathLib.Solve_2X2_System(a, result, b);
-		
-		return (1);
+    		var lineStart = new Vector2D();
+            lineStart.x = 1;
+            lineStart.y = 1;
+            var lineStop = new Vector2D();
+            lineStop.x = 3;
+            lineStop.y = 3;
+    		var point = new Point2D();
+            point.x = 1;
+            point.y = 1;
+
+            var distance = MathLib.DistancePoint2DToVector2D(lineStart, lineStop, point); // 0
+    		
+    		return (1);
 			
-	}
+	    }
 
+        var test = function(){
+            // var result = testDistancePoint2DToVector2D();
+        }
 				
 				
         </script>
