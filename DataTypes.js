@@ -24,8 +24,8 @@ function Vector2D(point2D_x, point2D_y)
 // }
 
 //Трехмерная точка
-var Point3D = new Object();
-Point3D = {x:0.0, y:0.0, x:0.0}
+// var Point3D = new Object();
+// Point3D = {x:0.0, y:0.0, x:0.0}
 function Point3D(x, y, z)
 {
 	this.x = x;
