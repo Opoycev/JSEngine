@@ -1443,6 +1443,7 @@ MathLib = {
 
 		// var a = Math.pow((Point3D_dot.x - Vector3D_lineStart.x), 2) + Math.pow((Point3D_dot.x - Vector3D_lineStart.x), 2) + Math.pow((Point3D_dot.x - Vector3D_lineStart.x), 2);
 		// var b = Math.pow((Point3D_dot.y - Vector3D_lineStop.y), 2) + Math.pow((Point3D_dot.y - Vector3D_lineStop.y), 2) + Math.pow((Point3D_dot.y - Vector3D_lineStop.y), 2);
+		// длина вектора
 		var c = Math.pow((Vector3D_lineStart.x - Vector3D_lineStop.x), 2) + Math.pow((Vector3D_lineStart.y - Vector3D_lineStop.y), 2) + Math.pow((Vector3D_lineStart.z - Vector3D_lineStop.z), 2);
 
 		// if (a>=b+c) return Math.sqrt(b);
@@ -1451,12 +1452,12 @@ MathLib = {
 		var a1 = Vector3D_lineStart.x - Point3D_dot.x; var a2 = Vector3D_lineStart.y - Point3D_dot.y; var a3 = Vector3D_lineStart.z - Point3D_dot.z;
 		var b1 = Vector3D_lineStop.x - Point3D_dot.x; var b2 = Vector3D_lineStop.y - Point3D_dot.y; var b3 = Vector3D_lineStop.z - Point3D_dot.z;
 
-		var distance = Math.sqrt((Math.pow((a2*b3-a3*b2), 2) + Math.pow(-(a1*b3-a3*b1), 2) + Math.pow((a1*b2-b1*a2), 2)) / c);
+		var distance = Math.sqrt((Math.pow((a2*b3 - a3*b2), 2) + Math.pow(-(a1*b3 - a3*b1), 2) + Math.pow((a1*b2 - b1*a2), 2)) / c);
 
 		return distance;
 	 },
 
-	 // [Tested]
+	 // [Tested];
 	 DistancePoint3DTovector3DBinTesting: function(Vector3D_lineStart, Vector3D_lineStop, Point3D_dot)
         {
         	// Расстояние от техмерной точки до терхмерной прямой методом бинарного поиска
@@ -1481,7 +1482,7 @@ MathLib = {
             var distance = Math.sqrt(len(Point3D_dot.x,Point3D_dot.y,Point3D_dot.z,cx,cy,cz));
 
             return distance;
-        },
+        }
 
 	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	 

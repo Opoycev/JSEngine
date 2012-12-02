@@ -59,7 +59,7 @@ function Vector4D(x, y, z, w)
 	this.w = w;
 }
 
-//////////////////////////////////////////Параметризированные прямые/////////////////////
+//////////////////////////////////////////Параметрические прямые/////////////////////
 
 //Двумерная параметричкская прямая
 var ParamLine2D = new Object();
@@ -88,13 +88,13 @@ function ParamLine3D(p0, p1, vector3DasPoint3D)
 /////////////////////////////////////////Трехмерные плоскости/////////////////////////////
 
 //Трехмерная плоскость
-var Plane3D = new Object();
-Plane3D.p0 = Point3D; // Точка на полоскости
-Plane3D.NormalVectorAsPoint3D = Point3D; // Нормальный вектор
+// var Plane3D = new Object();
+// Plane3D.p0 = Point3D; // Точка на полоскости
+// Plane3D.NormalVectorAsPoint3D = Point3D; // Вектор нормали
 function Plane3D(p0, normalVectorAsPoint3D)
 {
 	this.p0 = p0; // Точка на полоскости
-	this.NormalVectorAsPoint3D = normalVectorAsPoint3D; // Нормальный вектор
+	this.NormalVectorAsPoint3D = normalVectorAsPoint3D; // Вектор нормали
 }
 
 /////////////////////////////////////////Матрицы//////////////////////////////////////////
