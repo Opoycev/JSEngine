@@ -709,14 +709,14 @@ MathLib = {
 	 {
 		// Инициализация матрицы 3х3 значениями
 
-		MATRIX3X3_maюM00 = m00; MATRIX3X3_maюM01 = m01; MATRIX3X3_maюM02 = m02;
-		MATRIX3X3_maюM10 = m10; MATRIX3X3_maюM11 = m11; MATRIX3X3_maюM12 = m12;
-		MATRIX3X3_maюM20 = m20; MATRIX3X3_maюM21 = m21; MATRIX3X3_maюM22 = m22;
+		MATRIX3X3_ma.M00 = m00; MATRIX3X3_ma.M01 = m01; MATRIX3X3_ma.M02 = m02;
+		MATRIX3X3_ma.M10 = m10; MATRIX3X3_ma.M11 = m11; MATRIX3X3_ma.M12 = m12;
+		MATRIX3X3_ma.M20 = m20; MATRIX3X3_ma.M21 = m21; MATRIX3X3_ma.M22 = m22;
 	 },
 
 	 Mat_Inverse_3X3: function(MATRIX3X3_m, MATRIX3X3_mi)
 	 {
-		// Вычисляет обратнцю матрицу 3х3
+		// Вычисляет обратную матрицу 3х3
 
 		// сначала находим определитель
 		var det = MATRIX3X3_m.M[0][0]*(MATRIX3X3_m.M[1][1]*MATRIX3X3_m.M[2][2] - MATRIX3X3_m.M[2][1]*MATRIX3X3_m.M[1][2]) - 
@@ -799,7 +799,7 @@ MathLib = {
 
 		// решение для z /////////////////
 
-		// копируем матрицу MATRIX3X3_A в рабочцю
+		// копируем матрицу MATRIX3X3_A в рабочую
 		MAT_COPY_3X3(work_mat, MATRIX3X3_A);
 
 		// заменяем третий столбец
@@ -1251,7 +1251,7 @@ MathLib = {
 	 {
 		// Возвращает квадрат длины кватерниона
 		// Тоже, что и QUAT_Norm, только без квадратного корня
-		return(QUAT_qюw*QUAT_qюw + QUAT_qюx*QUAT_qюx + QUAT_qюy*QUAT_qюy + QUAT_qюz*QUAT_qюz);
+		return(QUAT_q.w*QUAT_q.w + QUAT_q.x*QUAT_q.x + QUAT_q.y*QUAT_q.y + QUAT_q.z*QUAT_q.z);
 	 },
 
 	 QUAT_NormalizeAndreturnQUAT: function(QUAT_q, QUAT_qn)
